@@ -1,0 +1,162 @@
+<!-- 
+
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="logo">
+    <ion-icon name="person-circle-outline"></ion-icon>
+    <h2>Welcome Back</h2>
+  </div>
+
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input
+        type="email"
+        formControlName="email">
+      </ion-input>
+    </ion-item>
+
+    <ion-text color="danger"
+      *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+      Enter valid email
+    </ion-text>
+
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="password">
+      </ion-input>
+
+      <ion-button
+        fill="clear"
+        slot="end"
+        (click)="showPassword=!showPassword">
+
+        <ion-icon
+          [name]="showPassword ? 'eye-off-outline' : 'eye-outline'">
+        </ion-icon>
+
+      </ion-button>
+
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="login-btn"
+      type="submit"
+      [disabled]="loginForm.invalid">
+
+      Login
+
+    </ion-button>
+
+  </form>
+
+  <p class="register-text">
+    Don't have an account?
+
+    <a routerLink="/register">
+      Register
+    </a>
+
+  </p>
+
+</ion-content>
+
+<ion-footer class="footer">
+  <p>Copyright 2024</p>
+  </ion-footer> -->
+
+<ion-content [fullscreen]="true" class="login-page">
+  <div class="top-section">
+    <br />
+    <br />
+    
+    <h1>Login</h1>
+
+   
+    <br />
+    <br />
+    <br />
+    <ion-item lines="none" class="custom-input">
+      <ion-icon name="mail-outline" slot="start"></ion-icon>
+
+      <ion-input
+        [(ngModel)]="email"
+        type="email"
+        placeholder="yourmail00@gmail.com"
+      >
+      </ion-input>
+      <!-- <ion-icon
+        slot="end"
+        name="checkmark-circle"
+        color="primary">
+      </ion-icon> -->
+    </ion-item>
+
+    <ion-item lines="none" class="custom-input">
+      <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+
+      <ion-input
+        [(ngModel)]="password"
+        [type]="showPassword ? 'text' : 'password'"
+        placeholder="Password"
+      >
+      </ion-input>
+
+      <ion-icon
+        slot="end"
+        [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+        (click)="togglePassword()"
+      >
+      </ion-icon>
+    </ion-item>
+
+    <!-- <ion-item lines="none" class="remember">
+      <ion-checkbox slot="start" [(ngModel)]="rememberMe"> </ion-checkbox>
+
+      <ion-label>Remember Me</ion-label>
+    </ion-item> -->
+
+    <div class="remember">
+      <ion-checkbox [(ngModel)]="rememberMe"></ion-checkbox>
+      <ion-label>Remember Me</ion-label>
+    </div>
+
+    <ion-button expand="block" class="login-btn" (click)="login()">
+      Login
+    </ion-button>
+
+    <p class="forgot">Forgot your password?</p>
+    <div class="bottom-section">
+      <h3>Need an account?</h3>
+
+      <div class="social-icons">
+        <ion-button fill="clear">
+          <ion-icon name="logo-google"></ion-icon>
+        </ion-button>
+
+        <ion-button fill="clear">
+          <ion-icon name="logo-facebook"></ion-icon>
+        </ion-button>
+
+        <!-- <ion-button fill="clear">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </ion-button> -->
+      </div>
+
+      <ion-button (click)="goToSignup()" expand="block" class="signup-btn">
+        Sign Up
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,158 @@
+/* This style is for demonstration purposes only. */
+/* It's not required for the tabs to function. */
+.example-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Background */
+
+.home-content {
+  --background: #f4f6fb;
+}
+
+/* Header */
+
+.header-toolbar {
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+  --color: white;
+}
+
+/* Hero */
+
+.hero {
+  padding: 20px;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: bold;
+    color: black;
+  }
+
+  p {
+    color: #777;
+    margin-top: 5px;
+  }
+}
+
+/* Button */
+
+.add-btn {
+  margin: 15px;
+  --border-radius: 15px;
+  height: 52px;
+  font-weight: bold;
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+/* Card */
+
+.property-card {
+  margin: 16px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-right: 15px;
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+.card-top h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.card-top p {
+  margin-top: 4px;
+  color: #666;
+}
+
+.price {
+  margin-top: 18px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2575fc;
+}
+
+/* Bottom Tabs */
+
+.custom-tabbar {
+  --background: white;
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08);
+  height: 70px;
+}
+
+.custom-tabbar ion-tab-button {
+  --color: #999;
+  --color-selected: #6a11cb;
+}
+
+.custom-tabbar ion-icon {
+  font-size: 24px;
+}
+
+.custom-tabbar ion-label {
+  font-size: 12px;
+}
+
+.property-card {
+  position: relative;
+}
+
+.delete-btn,
+.edit-btn,
+.addroom-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.delete-btn {
+  right: 12px;
+}
+
+.edit-btn {
+  right: 52px;
+}
+
+.addroom-btn {
+  right: 92px;
+}
+
+.delete-btn ion-button,
+.edit-btn ion-button,
+.addroom-btn ion-button {
+  margin: 0;
+}
+
+ion-searchbar {
+  --background: #ffffff;
+  --border-radius: 12px;
+  padding: 8px;
+  color: #000000;
+}

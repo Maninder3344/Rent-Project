@@ -1,0 +1,68 @@
+<ion-content [fullscreen]="true" class="otp-page">
+  <div class="top-section">
+    <h1>Verify OTP</h1>
+
+    <p class="subtitle">
+      Enter the 6-digit verification code sent to your email.
+    </p>
+
+    <div class="otp-container">
+      <!-- <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input>
+
+      <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input>
+
+      <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input>
+
+      <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input>
+
+      <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input>
+
+      <ion-input
+        maxlength="1"
+        type="tel"
+        class="otp-box">
+      </ion-input> -->
+      <ion-input
+  *ngFor="let item of otp; let i = index; trackBy: trackByIndex"
+  #otpInput
+  [name]="'otp' + i"
+  class="otp-box"
+  type="tel"
+  inputmode="numeric"
+  maxlength="1"
+  [(ngModel)]="otp[i]"
+  (ionInput)="onInput($event, i)"
+  (keydown)="onKeyDown($event, i)"
+  (paste)="onPaste($event)">
+</ion-input>
+    </div>
+
+    <ion-button expand="block" class="verify-btn" (click)="verifyOtp()">
+      Verify OTP
+    </ion-button>
+
+    <p class="timer">Didn't receive the code?</p>
+
+    <ion-button fill="clear" class="resend-btn"> Resend OTP </ion-button>
+  </div>
+</ion-content>

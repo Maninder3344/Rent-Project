@@ -1,0 +1,137 @@
+<ion-tabs>
+  <!-- Home -->
+  <ion-tab tab="home">
+    <div class="ion-page">
+      <ion-header translucent="true">
+        <ion-toolbar class="header-toolbar">
+          <ion-title>🏠 Admin Panel</ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar
+            placeholder="Search Property"
+            [(ngModel)]="searchText"
+            (ionInput)="filterProperties()"
+          >
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content fullscreen class="home-content">
+        <div class="hero">
+          <h2>Property Management</h2>
+        </div>
+
+        <ion-button expand="block" class="add-btn" (click)="openModal()">
+          Add Property
+        </ion-button>
+
+        <ion-card
+          class="property-card"
+          *ngFor="let property of filteredProperties"
+        >
+          <ion-card-content>
+            <div class="card-top">
+              <div>
+                <h2>{{property.name}}</h2>
+                <p>{{property.address}}</p>
+              </div>
+            </div>
+
+            <div class="price">
+              <p>UnitPrice</p>
+              ₹ {{property.UnitPrice}}
+            </div>
+            <div class="addroom-btn">
+              <ion-button
+              fill="clear"
+              (click)="goToRoom(property)">
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="edit-btn">
+              <ion-button
+                fill="clear"
+                color="primary"
+                (click)="openEditModal(property)"
+              >
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="delete-btn">
+              <ion-button
+                fill="clear"
+                color="danger"
+                (click)="confirmDelete(property._id)"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </div>
+  </ion-tab>
+
+  <!-- Radio -->
+  <ion-tab tab="radio">
+    <div class="ion-page">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Radio</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding"> Radio Content </ion-content>
+    </div>
+  </ion-tab>
+
+  <!-- Library -->
+  <ion-tab tab="library">
+    <div class="ion-page">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Library</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding"> Library Content </ion-content>
+    </div>
+  </ion-tab>
+
+  <!-- Search -->
+  <ion-tab tab="search">
+    <div class="ion-page">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Search</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding"> Search Content </ion-content>
+    </div>
+  </ion-tab>
+
+  <!-- Bottom Tabs -->
+
+  <ion-tab-bar slot="bottom" class="custom-tabbar">
+    <ion-tab-button tab="home">
+      <ion-icon name="home"></ion-icon>
+      <ion-label>Property</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="radio">
+      <ion-icon name="radio"></ion-icon>
+      <ion-label>Radio</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="library">
+      <ion-icon name="library"></ion-icon>
+      <ion-label>Library</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <ion-label>Logout</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

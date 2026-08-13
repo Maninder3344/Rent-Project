@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" class="back-btn" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title> Room Management</ion-title>
+  </ion-toolbar>
+</ion-header>
+<div class="tt">
+  <h2>Property Management</h2>
+</div>
+<!-- Add Room Button -->
+<ion-button expand="block" (click)="openModal()">
+  <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+  Add Room
+</ion-button>
+<br />
+<!-- Add Room Modal -->
+<ion-modal [isOpen]="isModalOpen">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Add Room</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()"> Close </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-card>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="stacked">Room Number</ion-label>
+            <ion-input [(ngModel)]="room.roomNo"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Floor</ion-label>
+            <ion-input type="number" [(ngModel)]="room.floor"> </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Rent</ion-label>
+            <ion-input type="number" [(ngModel)]="room.rent"> </ion-input>
+          </ion-item>
+
+          <ion-button expand="block" (click)="addRoom()">
+            <ion-icon slot="start" name="add-circle-outline"> </ion-icon>
+
+            Add Room
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+<ion-content>
+  <ion-list>
+    <ion-card *ngFor="let r of rooms">
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="8">
+              <h2>Room {{ r.roomNo }}</h2>
+
+              <p>Floor : {{ r.floor }}</p>
+              <p>Rent : ₹{{ r.rent }}</p>
+              <p>Property : {{ r.propertyId?.name }}</p>
+            </ion-col>
+
+            <ion-col size="4" class="ion-text-end action-buttons">
+              <ion-button
+                color="primary"
+                fill="clear"
+                (click)="goToTenant(r)"
+              >
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-button>
+
+              <ion-button color="success" fill="clear">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+
+              <ion-button
+                color="danger"
+                fill="clear"
+                (click)="deleteRoom(r._id)"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

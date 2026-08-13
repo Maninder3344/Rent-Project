@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Angular
+.angular/
+dist/
+
+# Environment variables
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

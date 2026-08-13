@@ -1,0 +1,143 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" class="back-btn" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Tenant Management</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openTenantModal()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Search -->
+  <ion-searchbar
+    [(ngModel)]="searchText"
+    placeholder="Search tenant..."
+    debounce="300">
+  </ion-searchbar>
+
+  <!-- Tenant List -->
+  <ion-list *ngIf="filteredTenants.length > 0">
+
+    <ion-card *ngFor="let tenant of filteredTenants">
+
+      <ion-card-header>
+        <div class="tenant-header">
+
+          <div>
+            <ion-card-title>
+              {{ tenant.name }}
+            </ion-card-title>
+
+            <ion-card-subtitle>
+              {{ tenant.phone }}
+            </ion-card-subtitle>
+          </div>
+
+          <ion-badge
+            [color]="tenant.isVerified ? 'success' : 'warning'">
+            {{ tenant.isVerified ? 'Verified' : 'Not Verified' }}
+          </ion-badge>
+
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <div class="tenant-info">
+
+          <div class="info-row">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>
+              <strong>Members:</strong>
+              {{ tenant.members }}
+            </span>
+          </div>
+
+          <div class="info-row">
+            <ion-icon name="card-outline"></ion-icon>
+            <span>
+              <strong>Aadhaar:</strong>
+              {{ tenant.adhaarCardNumber }}
+            </span>
+          </div>
+
+          <div
+            class="info-row"
+            *ngIf="tenant.vehicleNumber">
+
+            <ion-icon name="car-outline"></ion-icon>
+
+            <span>
+              <strong>Vehicle:</strong>
+              {{ tenant.vehicleNumber }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="action-buttons">
+
+          <ion-button
+            fill="outline"
+            size="small"
+            (click)="editTenant(tenant)">
+            <ion-icon
+              slot="start"
+              name="create-outline">
+            </ion-icon>
+            Edit
+          </ion-button>
+
+          <ion-button
+            fill="outline"
+            color="danger"
+            size="small"
+            (click)="deleteTenant(tenant._id)">
+            <ion-icon
+              slot="start"
+              name="trash-outline">
+            </ion-icon>
+            Delete
+          </ion-button>
+
+        </div>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </ion-list>
+
+  <!-- Empty State -->
+  <div
+    class="empty-state"
+    *ngIf="filteredTenants.length === 0">
+
+    <ion-icon name="people-outline"></ion-icon>
+
+    <h2>No Tenants Found</h2>
+
+    <p>
+      Add a tenant to get started.
+    </p>
+
+    <ion-button
+      color="primary"
+      (click)="openTenantModal()">
+      Add Tenant
+    </ion-button>
+
+  </div>
+
+</ion-content>

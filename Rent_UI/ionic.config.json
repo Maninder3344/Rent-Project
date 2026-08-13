@@ -1,0 +1,7 @@
+{
+  "name": "Rent_UI",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

@@ -1,0 +1,74 @@
+<ion-header translucent="true">
+  <ion-toolbar class="header-toolbar">
+
+    <ion-buttons slot="start">
+      <ion-button color="light" (click)="cancel()">
+        <ion-icon slot="start" name="close"></ion-icon>
+        Cancel
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>
+      {{ isEdit ? 'Edit Property' : 'Add Property' }}
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="property-content">
+
+  <div class="form-card">
+
+    <div class="title">
+      <ion-icon name="business"></ion-icon>
+      <h2>{{ isEdit ? 'Edit Property' : 'Property Details' }}</h2>
+      <p>
+        {{ isEdit ? 'Update the property information below' : 'Fill in the information below' }}
+      </p>
+    </div>
+
+    <ion-item class="custom-item" lines="none">
+      <ion-input
+        label="Property Name"
+        labelPlacement="stacked"
+        placeholder="Enter property name"
+        [(ngModel)]="name">
+      </ion-input>
+    </ion-item>
+
+    <ion-item class="custom-item" lines="none">
+      <ion-input
+        label="Address"
+        labelPlacement="stacked"
+        placeholder="Enter address"
+        [(ngModel)]="address">
+      </ion-input>
+    </ion-item>
+
+    <ion-item class="custom-item" lines="none">
+      <ion-input
+        type="number"
+        label="Unit Price"
+        labelPlacement="stacked"
+        placeholder="₹ 0"
+        [(ngModel)]="UnitPrice">
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="save-btn"
+      (click)="confirm()"
+      [disabled]="isLoading">
+
+      {{
+        isLoading
+          ? (isEdit ? 'Updating...' : 'Saving...')
+          : (isEdit ? 'Update Property' : 'Save Property')
+      }}
+
+    </ion-button>
+
+  </div>
+
+</ion-content>
