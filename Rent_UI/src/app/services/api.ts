@@ -98,4 +98,57 @@ export class ApiService {
       body: { _id: id },
     });
   }
+
+
+  GetAllTenants() {
+
+  return this.http.get(
+    `${this.baseUrl}/GetAllTenants`,
+    {
+      withCredentials: true
+    }
+  );
+
+}
+
+
+CreateTenant(tenant: any) {
+
+  return this.http.post(
+    `${this.baseUrl}/CreateTenant`,
+    tenant,
+    {
+      withCredentials: true
+    }
+  );
+
+}
+
+
+UpdateTenant(tenant: any) {
+
+  return this.http.put(
+    `${this.baseUrl}/UpdateTenant`,
+    tenant,
+    {
+      withCredentials: true
+    }
+  );
+
+}
+
+
+DeleteTenant(id: string) {
+
+  return this.http.delete(
+    `${this.baseUrl}/DeleteTenant`,
+    {
+      body: {
+        _id: id
+      },
+      withCredentials: true
+    }
+  );
+
+}
 }

@@ -17,7 +17,12 @@ import {
   IonCardTitle,
   IonCardSubtitle,
   IonCardContent,
-  IonBadge
+  IonBadge,
+  IonModal,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonToggle,
 } from '@ionic/angular/standalone';
 
 import {
@@ -27,31 +32,49 @@ import {
   cardOutline,
   carOutline,
   createOutline,
-  trashOutline
+  trashOutline,
+  saveOutline,
+  addCircleOutline,
 } from 'ionicons/icons';
 
 import { addIcons } from 'ionicons';
 
+import { ApiService } from '../../services/api';
 
 interface Tenant {
   _id?: string;
+
   userId: string;
+
   name: string;
+
   phone: string;
+
   isVerified: boolean;
+
   adhaarCardNumber: string;
+
   members: number;
+
   vehicleNumber?: string;
+
   createdAt?: string;
+
   updatedAt?: string;
 }
 
 @Component({
   selector: 'app-tenant',
+
   templateUrl: './tenant.component.html',
+
   styleUrls: ['./tenant.component.scss'],
+
+  standalone: true,
+
   imports: [
     CommonModule,
+
     FormsModule,
 
     IonHeader,
@@ -68,79 +91,354 @@ interface Tenant {
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
-    IonBadge
-  ]
+    IonBadge,
+
+    // Modal
+    IonModal,
+
+    // Form
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonToggle,
+  ],
 })
-export class TenantComponent  implements OnInit {
-  
-tenants: Tenant[] = [];
+export class TenantComponent implements OnInit {
+  // =====================================================
+  // Tenant List
+  // =====================================================
+
+  tenants: Tenant[] = [];
 
   searchText = '';
 
-  constructor() { addIcons({
+  // =====================================================
+  // Modal
+  // =====================================================
+
+  isModalOpen = false;
+
+  isEditMode = false;
+
+  // =====================================================
+  // Tenant Form
+  // =====================================================
+
+  tenant: Tenant = {
+    userId: '',
+
+    name: '',
+
+    phone: '',
+
+    isVerified: false,
+
+    adhaarCardNumber: '',
+
+    members: 1,
+
+    vehicleNumber: '',
+  };
+
+  constructor(private api: ApiService) {
+    addIcons({
       addOutline,
+
       arrowBackOutline,
+
       peopleOutline,
+
       cardOutline,
+
       carOutline,
+
       createOutline,
-      trashOutline
+
+      trashOutline,
+
+      saveOutline,
+
+      addCircleOutline,
     });
- }
+  }
 
-  ngOnInit() { this.getTenants();}
+  // =====================================================
+  // On Init
+  // =====================================================
 
-    get filteredTenants(): Tenant[] {
+  ngOnInit() {
+    this.getTenants();
+  }
 
-    const search = this.searchText
-      .trim()
-      .toLowerCase();
+  // =====================================================
+  // Filter Tenants
+  // =====================================================
+
+  get filteredTenants(): Tenant[] {
+    const search = this.searchText.trim().toLowerCase();
 
     if (!search) {
       return this.tenants;
     }
 
-    return this.tenants.filter(tenant =>
-      tenant.name.toLowerCase().includes(search) ||
-      tenant.phone.includes(search) ||
-      tenant.adhaarCardNumber.includes(search) ||
-      tenant.vehicleNumber?.toLowerCase().includes(search)
+    return this.tenants.filter(
+      (tenant) =>
+        tenant.name?.toLowerCase().includes(search) ||
+        tenant.phone?.toLowerCase().includes(search) ||
+        tenant.adhaarCardNumber?.toLowerCase().includes(search) ||
+        tenant.vehicleNumber?.toLowerCase().includes(search),
     );
   }
 
+  // =====================================================
+  // Get All Tenants
+  // =====================================================
+
   getTenants() {
+    this.api.GetAllTenants().subscribe({
+      next: (response: any) => {
+        console.log('Get Tenants Response:', response);
 
-    // Replace with:
-    // this.api.GetTenants().subscribe(...)
+        /*
+         * Supports different API response formats
+         */
 
-    console.log('Get tenants');
+        if (Array.isArray(response)) {
+          this.tenants = response;
+        } else if (Array.isArray(response?.data)) {
+          this.tenants = response.data;
+        } else if (Array.isArray(response?.tenants)) {
+          this.tenants = response.tenants;
+        } else {
+          this.tenants = [];
+        }
 
+        console.log('Tenants:', this.tenants);
+      },
+
+      error: (error) => {
+        console.error('Get tenants error:', error);
+
+        this.tenants = [];
+      },
+    });
   }
+
+  // =====================================================
+  // Open Add Tenant Modal
+  // =====================================================
 
   openTenantModal() {
+    this.isEditMode = false;
 
-    console.log('Open tenant modal');
+    this.tenant = {
+      userId: '',
 
+      name: '',
+
+      phone: '',
+
+      isVerified: false,
+
+      adhaarCardNumber: '',
+
+      members: 1,
+
+      vehicleNumber: '',
+    };
+
+    this.isModalOpen = true;
   }
+
+  // =====================================================
+  // Edit Tenant
+  // =====================================================
 
   editTenant(tenant: Tenant) {
+    this.isEditMode = true;
 
-    console.log('Edit tenant', tenant);
+    this.tenant = {
+      _id: tenant._id,
 
+      userId: tenant.userId,
+
+      name: tenant.name,
+
+      phone: tenant.phone,
+
+      isVerified: tenant.isVerified,
+
+      adhaarCardNumber: tenant.adhaarCardNumber,
+
+      members: tenant.members ?? 1,
+
+      vehicleNumber: tenant.vehicleNumber ?? '',
+
+      createdAt: tenant.createdAt,
+
+      updatedAt: tenant.updatedAt,
+    };
+
+    this.isModalOpen = true;
   }
 
-  deleteTenant(id?: string) {
+  // =====================================================
+  // Close Modal
+  // =====================================================
 
-    if (!id) {
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  // =====================================================
+  // Save Tenant
+  // =====================================================
+
+  saveTenant() {
+    // -----------------------------
+    // Validate Name
+    // -----------------------------
+
+    if (!this.tenant.name?.trim()) {
+      alert('Please enter tenant name');
+
       return;
     }
 
-    console.log('Delete tenant', id);
+    // -----------------------------
+    // Validate Phone
+    // -----------------------------
 
+    if (!this.tenant.phone?.trim()) {
+      alert('Please enter phone number');
+
+      return;
+    }
+
+    // -----------------------------
+    // Validate Aadhaar
+    // -----------------------------
+
+    if (!this.tenant.adhaarCardNumber?.trim()) {
+      alert('Please enter Aadhaar number');
+
+      return;
+    }
+
+    // -----------------------------
+    // Validate Members
+    // -----------------------------
+
+    if (!this.tenant.members || this.tenant.members < 1) {
+      alert('Members must be at least 1');
+
+      return;
+    }
+
+    // =================================================
+    // UPDATE TENANT
+    // =================================================
+
+    if (this.isEditMode) {
+      if (!this.tenant._id) {
+        alert('Tenant ID is missing');
+
+        return;
+      }
+
+      this.api.UpdateTenant(this.tenant).subscribe({
+        next: (response: any) => {
+          console.log('Tenant updated:', response);
+
+          this.closeModal();
+
+          this.getTenants();
+        },
+
+        error: (error: any) => {
+          console.error('Update tenant error:', error);
+
+          alert(error?.error?.message || 'Failed to update tenant');
+        },
+      });
+
+      return;
+    }
+
+    // =================================================
+    // CREATE TENANT
+    // =================================================
+
+    const newTenant = {
+      name: this.tenant.name.trim(),
+
+      phone: this.tenant.phone.trim(),
+
+      adhaarCardNumber: this.tenant.adhaarCardNumber.trim(),
+
+      members: Number(this.tenant.members),
+
+      vehicleNumber: this.tenant.vehicleNumber?.trim() || '',
+
+      isVerified: this.tenant.isVerified,
+    };
+
+    console.log('Creating tenant:', newTenant);
+
+    this.api.CreateTenant(newTenant).subscribe({
+      next: (response: any) => {
+        console.log('Tenant created:', response);
+
+        this.closeModal();
+
+        this.getTenants();
+      },
+
+      error: (error: any) => {
+        console.error('Create tenant error:', error);
+
+        alert(error?.error?.message || 'Failed to create tenant');
+      },
+    });
   }
+
+  // =====================================================
+  // Delete Tenant
+  // =====================================================
+
+  deleteTenant(id?: string) {
+    if (!id) {
+      console.error('Tenant ID is undefined');
+
+      return;
+    }
+
+    const confirmed = confirm('Are you sure you want to delete this tenant?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.api.DeleteTenant(id).subscribe({
+      next: (response: any) => {
+        console.log('Tenant deleted:', response);
+
+        this.getTenants();
+      },
+
+      error: (error: any) => {
+        console.error('Delete tenant error:', error);
+
+        alert(error?.error?.message || 'Failed to delete tenant');
+      },
+    });
+  }
+
+  // =====================================================
+  // Go Back
+  // =====================================================
 
   goBack() {
     history.back();
   }
-
 }
