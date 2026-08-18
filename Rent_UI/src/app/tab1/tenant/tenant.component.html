@@ -106,7 +106,7 @@
   <div class="tt">
     <h2>Tenant Management</h2>
   </div>
-  <br>
+  <br />
   <!-- Add Room Button -->
   <ion-button expand="block" (click)="openTenantModal()">
     <ion-icon slot="start" name="add-circle-outline"></ion-icon>
@@ -135,6 +135,17 @@
     <ion-content class="ion-padding">
       <ion-card>
         <ion-card-content>
+          <!-- user id -->
+          <ion-item>
+            <ion-label position="stacked"> Select User </ion-label>
+
+            <ion-select [(ngModel)]="tenant.userId" placeholder="Select user">
+              <ion-select-option *ngFor="let user of users" [value]="user._id">
+                {{ user.name || "Unnamed User" }}
+                <span *ngIf="user.email"> - {{ user.email }} </span>
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
           <!-- Tenant Name -->
           <ion-item>
             <ion-label position="stacked"> Tenant Name </ion-label>
@@ -199,11 +210,11 @@
           </ion-item>
 
           <!-- Verified -->
-          <ion-item>
+          <!-- <ion-item>
             <ion-label> Verified </ion-label>
 
             <ion-toggle [(ngModel)]="tenant.isVerified"> </ion-toggle>
-          </ion-item>
+          </ion-item> -->
 
           <!-- Submit -->
           <ion-button

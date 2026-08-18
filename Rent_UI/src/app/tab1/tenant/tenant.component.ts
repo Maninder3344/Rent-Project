@@ -10,7 +10,6 @@ import {
   IonIcon,
   IonTitle,
   IonContent,
-  IonSearchbar,
   IonList,
   IonCard,
   IonCardHeader,
@@ -22,7 +21,8 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonToggle,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/angular/standalone';
 
 import {
@@ -40,6 +40,24 @@ import {
 import { addIcons } from 'ionicons';
 
 import { ApiService } from '../../services/api';
+
+// =====================================================
+// User Interface
+// =====================================================
+
+interface User {
+  _id: string;
+
+  name?: string;
+
+  email?: string;
+
+  phone?: string;
+}
+
+// =====================================================
+// Tenant Interface
+// =====================================================
 
 interface Tenant {
   _id?: string;
@@ -84,31 +102,43 @@ interface Tenant {
     IonIcon,
     IonTitle,
     IonContent,
-    IonSearchbar,
+
     IonList,
+
     IonCard,
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
+
     IonBadge,
 
-    // Modal
     IonModal,
 
-    // Form
     IonItem,
     IonLabel,
     IonInput,
-    IonToggle,
+
+    IonSelect,
+    IonSelectOption,
   ],
 })
 export class TenantComponent implements OnInit {
   // =====================================================
-  // Tenant List
+  // Users
+  // =====================================================
+
+  users: User[] = [];
+
+  // =====================================================
+  // Tenants
   // =====================================================
 
   tenants: Tenant[] = [];
+
+  // =====================================================
+  // Search
+  // =====================================================
 
   searchText = '';
 
@@ -140,6 +170,10 @@ export class TenantComponent implements OnInit {
     vehicleNumber: '',
   };
 
+  // =====================================================
+  // Constructor
+  // =====================================================
+
   constructor(private api: ApiService) {
     addIcons({
       addOutline,
@@ -167,7 +201,39 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   ngOnInit() {
+    this.getUsers();
+
     this.getTenants();
+  }
+
+  // =====================================================
+  // Get Users
+  // =====================================================
+
+  getUsers() {
+    this.api.GetAllUsers().subscribe({
+      next: (response: any) => {
+        console.log('Get Users Response:', response);
+
+        if (Array.isArray(response)) {
+          this.users = response;
+        } else if (Array.isArray(response?.data)) {
+          this.users = response.data;
+        } else if (Array.isArray(response?.users)) {
+          this.users = response.users;
+        } else {
+          this.users = [];
+        }
+
+        console.log('Users:', this.users);
+      },
+
+      error: (error: any) => {
+        console.error('Get users error:', error);
+
+        this.users = [];
+      },
+    });
   }
 
   // =====================================================
@@ -199,10 +265,6 @@ export class TenantComponent implements OnInit {
       next: (response: any) => {
         console.log('Get Tenants Response:', response);
 
-        /*
-         * Supports different API response formats
-         */
-
         if (Array.isArray(response)) {
           this.tenants = response;
         } else if (Array.isArray(response?.data)) {
@@ -216,7 +278,7 @@ export class TenantComponent implements OnInit {
         console.log('Tenants:', this.tenants);
       },
 
-      error: (error) => {
+      error: (error: any) => {
         console.error('Get tenants error:', error);
 
         this.tenants = [];
@@ -291,13 +353,50 @@ export class TenantComponent implements OnInit {
   }
 
   // =====================================================
+  // User Selected
+  // =====================================================
+
+  onUserChange() {
+    const selectedUser = this.users.find(
+      (user) => user._id === this.tenant.userId,
+    );
+
+    if (!selectedUser) {
+      return;
+    }
+
+    /*
+     * Automatically fill tenant information
+     * from selected User if available.
+     */
+
+    if (selectedUser.name) {
+      this.tenant.name = selectedUser.name;
+    }
+
+    if (selectedUser.phone) {
+      this.tenant.phone = selectedUser.phone;
+    }
+  }
+
+  // =====================================================
   // Save Tenant
   // =====================================================
 
   saveTenant() {
-    // -----------------------------
+    // =================================================
+    // Validate User
+    // =================================================
+
+    if (!this.tenant.userId) {
+      alert('Please select a user');
+
+      return;
+    }
+
+    // =================================================
     // Validate Name
-    // -----------------------------
+    // =================================================
 
     if (!this.tenant.name?.trim()) {
       alert('Please enter tenant name');
@@ -305,9 +404,9 @@ export class TenantComponent implements OnInit {
       return;
     }
 
-    // -----------------------------
+    // =================================================
     // Validate Phone
-    // -----------------------------
+    // =================================================
 
     if (!this.tenant.phone?.trim()) {
       alert('Please enter phone number');
@@ -315,9 +414,9 @@ export class TenantComponent implements OnInit {
       return;
     }
 
-    // -----------------------------
+    // =================================================
     // Validate Aadhaar
-    // -----------------------------
+    // =================================================
 
     if (!this.tenant.adhaarCardNumber?.trim()) {
       alert('Please enter Aadhaar number');
@@ -325,9 +424,9 @@ export class TenantComponent implements OnInit {
       return;
     }
 
-    // -----------------------------
+    // =================================================
     // Validate Members
-    // -----------------------------
+    // =================================================
 
     if (!this.tenant.members || this.tenant.members < 1) {
       alert('Members must be at least 1');
@@ -336,7 +435,7 @@ export class TenantComponent implements OnInit {
     }
 
     // =================================================
-    // UPDATE TENANT
+    // UPDATE
     // =================================================
 
     if (this.isEditMode) {
@@ -366,10 +465,15 @@ export class TenantComponent implements OnInit {
     }
 
     // =================================================
-    // CREATE TENANT
+    // CREATE
     // =================================================
 
     const newTenant = {
+      // IMPORTANT
+      // User ID comes from User collection
+
+      userId: this.tenant.userId,
+
       name: this.tenant.name.trim(),
 
       phone: this.tenant.phone.trim(),
@@ -383,7 +487,7 @@ export class TenantComponent implements OnInit {
       isVerified: this.tenant.isVerified,
     };
 
-    console.log('Creating tenant:', newTenant);
+    console.log('Creating Tenant:', newTenant);
 
     this.api.CreateTenant(newTenant).subscribe({
       next: (response: any) => {

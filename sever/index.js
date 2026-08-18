@@ -25,6 +25,8 @@ import {
   GetAllUsers,
   DeleteUnverifiedUsers,
 } from "./controllers/User.js";
+
+import { CreateTenant } from "./controllers/Tenant.js";
 import { verifyToken } from "./middleware/verifyToken.js";
 import { CreateRent, GetAllRent } from "./controllers/Rent.js";
 import {
@@ -36,13 +38,14 @@ import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
-app.use(cors({
-  origin: ["http://localhost:8100", "http://localhost:4200"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:8100", "http://localhost:4200"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
-
 
 // Property routes
 
@@ -64,12 +67,18 @@ app.get("/GetRoomById", GetRoomById);
 app.post("/CreateRent", verifyToken, CreateRent);
 app.get("/GetAllRent", verifyToken, GetAllRent);
 
+// tenant routes
+app.post("/CreateTenant", CreateTenant);
+
+
 //user routes
 app.post("/RegisterUser", RegisterLimiter, RegisterUser);
 app.post("/VerifyAccount", otpLimiter, verifyToken, VerifyAccount);
 app.post("/LoginUser", LoginLimiter, LoginUser);
 app.post("/LogoutUser", verifyToken, LogoutUser);
 app.get("/GetAllUsers", verifyToken, GetAllUsers);
+
+
 
 // Connect to MongoDB and start the server
 mongoose

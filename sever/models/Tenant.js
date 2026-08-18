@@ -19,10 +19,10 @@ const tenantSchema = new mongoose.Schema(
       unique: true,
     },
 
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+    // isVerified: {
+    //   type: Boolean,
+    //   default: false,
+    // },
 
     adhaarCardNumber: {
       type: String,

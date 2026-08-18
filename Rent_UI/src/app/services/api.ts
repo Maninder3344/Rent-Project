@@ -37,8 +37,20 @@ export class ApiService {
     );
   }
 
-  GetAllUsers(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/GetAllUsers`);
+  // GetAllUsers(): Observable<any> {
+  //   return this.http.get(`${this.baseUrl}/GetAllUsers`);
+  // }
+
+  GetAllUsers() {
+    const token =
+      sessionStorage.getItem('token') || localStorage.getItem('token');
+
+    return this.http.get(`${this.baseUrl}/GetAllUsers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
   }
 
   //property
@@ -65,10 +77,10 @@ export class ApiService {
   }
 
   GetPropertyById(id: string) {
-  return this.http.post(`${this.baseUrl}/GetPropertyById`, {
-    _id: id,
-  });
-}
+    return this.http.post(`${this.baseUrl}/GetPropertyById`, {
+      _id: id,
+    });
+  }
 
   // room
   CreateRoom(data: any): Observable<any> {
@@ -99,56 +111,32 @@ export class ApiService {
     });
   }
 
+  // tenant
 
   GetAllTenants() {
+    return this.http.get(`${this.baseUrl}/GetAllTenants`, {
+      withCredentials: true,
+    });
+  }
 
-  return this.http.get(
-    `${this.baseUrl}/GetAllTenants`,
-    {
-      withCredentials: true
-    }
-  );
+  CreateTenant(tenant: any) {
+    return this.http.post(`${this.baseUrl}/CreateTenant`, tenant, {
+      withCredentials: true,
+    });
+  }
 
-}
+  UpdateTenant(tenant: any) {
+    return this.http.put(`${this.baseUrl}/UpdateTenant`, tenant, {
+      withCredentials: true,
+    });
+  }
 
-
-CreateTenant(tenant: any) {
-
-  return this.http.post(
-    `${this.baseUrl}/CreateTenant`,
-    tenant,
-    {
-      withCredentials: true
-    }
-  );
-
-}
-
-
-UpdateTenant(tenant: any) {
-
-  return this.http.put(
-    `${this.baseUrl}/UpdateTenant`,
-    tenant,
-    {
-      withCredentials: true
-    }
-  );
-
-}
-
-
-DeleteTenant(id: string) {
-
-  return this.http.delete(
-    `${this.baseUrl}/DeleteTenant`,
-    {
+  DeleteTenant(id: string) {
+    return this.http.delete(`${this.baseUrl}/DeleteTenant`, {
       body: {
-        _id: id
+        _id: id,
       },
-      withCredentials: true
-    }
-  );
-
-}
+      withCredentials: true,
+    });
+  }
 }
