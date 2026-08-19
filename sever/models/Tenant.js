@@ -8,6 +8,14 @@ const tenantSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+
+    roomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Room",
+      required: true,
+      unique: true,
+    },
+
     name: {
       type: String,
       required: true,
@@ -42,7 +50,7 @@ const tenantSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const TenantModel = mongoose.model("Tenant", tenantSchema);

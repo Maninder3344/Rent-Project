@@ -41,7 +41,7 @@ export const routes: Routes = [
   },
 
   {
-    path:'tenant/:id',
+    path:'tenant',
      loadComponent: () =>
       import('./tab1/tenant/tenant.component').then((m)=>m.TenantComponent),
       canActivate: [authGuard],

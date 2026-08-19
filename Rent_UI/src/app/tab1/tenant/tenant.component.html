@@ -146,6 +146,16 @@
               </ion-select-option>
             </ion-select>
           </ion-item>
+          <!-- room id -->
+          <ion-item>
+            <ion-label position="stacked">Select Room</ion-label>
+
+            <ion-select [(ngModel)]="tenant.roomId" placeholder="Select room">
+              <ion-select-option *ngFor="let room of rooms" [value]="room._id">
+                Room {{ room.roomNo }} - Floor {{ room.floor }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
           <!-- Tenant Name -->
           <ion-item>
             <ion-label position="stacked"> Tenant Name </ion-label>

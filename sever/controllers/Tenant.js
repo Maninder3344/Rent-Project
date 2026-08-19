@@ -4,6 +4,7 @@ export const CreateTenant = async (req, res) => {
   try {
     let tenantData = await TenantModel.create({
       userId: req.body.userId,
+      roomId: req.body.roomId,
       name: req.body.name,
       phone: req.body.phone,
       isVerified: req.body.isVerified,
@@ -79,6 +80,7 @@ export const GetTenants = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const GetTenantById = async (req, res) => {
   try {

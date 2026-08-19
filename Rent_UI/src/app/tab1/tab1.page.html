@@ -73,7 +73,7 @@
   </ion-tab>
 
   <!-- Radio -->
-  <ion-tab tab="radio">
+  <!-- <ion-tab tab="radio">
     <div class="ion-page">
       <ion-header>
         <ion-toolbar>
@@ -83,7 +83,7 @@
 
       <ion-content class="ion-padding"> Radio Content </ion-content>
     </div>
-  </ion-tab>
+  </ion-tab> -->
 
   <!-- Library -->
   <ion-tab tab="library">
@@ -119,9 +119,9 @@
       <ion-label>Property</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="radio">
+    <ion-tab-button tab="radio" (click)="goToTenant()">
       <ion-icon name="radio"></ion-icon>
-      <ion-label>Radio</ion-label>
+      <ion-label>Tenant</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="library">

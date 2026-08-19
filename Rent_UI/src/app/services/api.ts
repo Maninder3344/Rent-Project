@@ -114,7 +114,7 @@ export class ApiService {
   // tenant
 
   GetAllTenants() {
-    return this.http.get(`${this.baseUrl}/GetAllTenants`, {
+    return this.http.get(`${this.baseUrl}/GetTenants`, {
       withCredentials: true,
     });
   }

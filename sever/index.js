@@ -26,7 +26,7 @@ import {
   DeleteUnverifiedUsers,
 } from "./controllers/User.js";
 
-import { CreateTenant } from "./controllers/Tenant.js";
+import { CreateTenant, GetTenants } from "./controllers/Tenant.js";
 import { verifyToken } from "./middleware/verifyToken.js";
 import { CreateRent, GetAllRent } from "./controllers/Rent.js";
 import {
@@ -69,7 +69,7 @@ app.get("/GetAllRent", verifyToken, GetAllRent);
 
 // tenant routes
 app.post("/CreateTenant", CreateTenant);
-
+app.get("/GetTenants",GetTenants);
 
 //user routes
 app.post("/RegisterUser", RegisterLimiter, RegisterUser);

@@ -221,4 +221,10 @@ export class Tab1Page {
   goToRoom(property: any) {
     this.router.navigate(['/room',property._id]);
   }
+
+  goToTenant() {
+  this.router.navigate(['/tenant']);
 }
+}
+
+
