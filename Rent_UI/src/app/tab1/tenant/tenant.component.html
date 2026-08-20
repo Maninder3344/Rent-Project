@@ -1,33 +1,42 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <!-- Back Button -->
     <ion-buttons slot="start">
       <ion-button fill="clear" class="back-btn" (click)="goBack()">
         <ion-icon slot="icon-only" name="arrow-back-outline"> </ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <ion-title>Tenant Management</ion-title>
-
-    <!-- <ion-buttons slot="end">
-      <ion-button (click)="openTenantModal()">
-        <ion-icon slot="icon-only" name="add-outline"> </ion-icon>
-      </ion-button>
-    </ion-buttons> -->
+    <ion-title> Tenant Management </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Search -->
-  <!-- <ion-searchbar
-    [(ngModel)]="searchText"
-    placeholder="Search tenant..."
-    debounce="300"
-  >
-  </ion-searchbar> -->
 
+<!-- ================================================= -->
+  <!-- Empty / Add Tenant -->
+  <!-- ================================================= -->
+
+  <div class="tt">
+    <h2>Tenant Management</h2>
+  </div>
+
+  <br />
+
+  <!-- Add Tenant -->
+  <ion-button expand="block" (click)="openTenantModal()">
+    <ion-icon slot="start" name="add-circle-outline"> </ion-icon>
+
+    Add Tenant
+  </ion-button>
+
+  <!-- ================================================= -->
   <!-- Tenant List -->
+  <!-- ================================================= -->
+
   <ion-list *ngIf="filteredTenants.length > 0" class="tenant-list">
     <ion-card *ngFor="let tenant of filteredTenants" class="tenant-card">
+      <!-- Tenant Header -->
       <ion-card-header>
         <div class="tenant-header">
           <div class="tenant-title">
@@ -46,11 +55,12 @@
         </div>
       </ion-card-header>
 
+      <!-- Tenant Information -->
       <ion-card-content>
         <div class="tenant-info">
           <!-- Members -->
           <div class="info-row">
-            <ion-icon name="people-outline"></ion-icon>
+            <ion-icon name="people-outline"> </ion-icon>
 
             <span>
               <strong>Members:</strong>
@@ -60,7 +70,7 @@
 
           <!-- Aadhaar -->
           <div class="info-row">
-            <ion-icon name="card-outline"></ion-icon>
+            <ion-icon name="card-outline"> </ion-icon>
 
             <span>
               <strong>Aadhaar:</strong>
@@ -70,7 +80,7 @@
 
           <!-- Vehicle -->
           <div class="info-row" *ngIf="tenant.vehicleNumber">
-            <ion-icon name="car-outline"></ion-icon>
+            <ion-icon name="car-outline"> </ion-icon>
 
             <span>
               <strong>Vehicle:</strong>
@@ -81,12 +91,14 @@
 
         <!-- Actions -->
         <div class="action-buttons">
+          <!-- Edit -->
           <ion-button fill="outline" size="small" (click)="editTenant(tenant)">
             <ion-icon slot="start" name="create-outline"> </ion-icon>
 
             Edit
           </ion-button>
 
+          <!-- Delete -->
           <ion-button
             fill="outline"
             color="danger"
@@ -102,21 +114,12 @@
     </ion-card>
   </ion-list>
 
-  <!-- Empty State -->
-  <div class="tt">
-    <h2>Tenant Management</h2>
-  </div>
-  <br />
-  <!-- Add Room Button -->
-  <ion-button expand="block" (click)="openTenantModal()">
-    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-    Add Tenant
-  </ion-button>
+  
 </ion-content>
 
-<!-- ====================================== -->
+<!-- ===================================================== -->
 <!-- Add / Edit Tenant Modal -->
-<!-- ====================================== -->
+<!-- ===================================================== -->
 
 <ion-modal [isOpen]="isModalOpen">
   <ng-template>
@@ -135,28 +138,81 @@
     <ion-content class="ion-padding">
       <ion-card>
         <ion-card-content>
-          <!-- user id -->
+          <!-- ================================================= -->
+          <!-- Select User -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Select User </ion-label>
 
-            <ion-select [(ngModel)]="tenant.userId" placeholder="Select user">
+            <ion-select
+              [(ngModel)]="tenant.userId"
+              (ionChange)="onUserChange()"
+              placeholder="Select user"
+            >
               <ion-select-option *ngFor="let user of users" [value]="user._id">
                 {{ user.name || "Unnamed User" }}
+
                 <span *ngIf="user.email"> - {{ user.email }} </span>
               </ion-select-option>
             </ion-select>
           </ion-item>
-          <!-- room id -->
-          <ion-item>
-            <ion-label position="stacked">Select Room</ion-label>
 
-            <ion-select [(ngModel)]="tenant.roomId" placeholder="Select room">
-              <ion-select-option *ngFor="let room of rooms" [value]="room._id">
-                Room {{ room.roomNo }} - Floor {{ room.floor }}
+          <!-- ================================================= -->
+          <!-- Select Property -->
+          <!-- ================================================= -->
+
+          <ion-item>
+            <ion-label position="stacked"> Select Property </ion-label>
+
+            <ion-select
+              [(ngModel)]="tenant.propertyId"
+              (ionChange)="onPropertyChange()"
+              placeholder="Select property"
+            >
+              <ion-select-option
+                *ngFor="let property of properties"
+                [value]="property._id"
+              >
+                {{ property.name || "Unnamed Property" }}
               </ion-select-option>
             </ion-select>
           </ion-item>
+
+          <!-- ================================================= -->
+          <!-- Select Room -->
+          <!-- ================================================= -->
+
+          <ion-item>
+            <ion-label position="stacked"> Select Room </ion-label>
+
+            <ion-select
+              [(ngModel)]="tenant.roomId"
+              placeholder="Select room"
+              [disabled]="!tenant.propertyId || filteredRooms.length === 0"
+            >
+              <ion-select-option
+                *ngFor="let room of filteredRooms"
+                [value]="room._id"
+              >
+                Room {{ room.roomNo }} - Floor {{ room.floor }} - ₹{{
+                  room.rent
+                }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- No Rooms Message -->
+          <ion-item *ngIf="tenant.propertyId && filteredRooms.length === 0">
+            <ion-label color="medium">
+              No rooms available for this property.
+            </ion-label>
+          </ion-item>
+
+          <!-- ================================================= -->
           <!-- Tenant Name -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Tenant Name </ion-label>
 
@@ -168,7 +224,10 @@
             </ion-input>
           </ion-item>
 
+          <!-- ================================================= -->
           <!-- Phone -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Phone Number </ion-label>
 
@@ -181,7 +240,10 @@
             </ion-input>
           </ion-item>
 
+          <!-- ================================================= -->
           <!-- Aadhaar -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Aadhaar Number </ion-label>
 
@@ -194,7 +256,10 @@
             </ion-input>
           </ion-item>
 
+          <!-- ================================================= -->
           <!-- Members -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Members </ion-label>
 
@@ -207,7 +272,10 @@
             </ion-input>
           </ion-item>
 
+          <!-- ================================================= -->
           <!-- Vehicle -->
+          <!-- ================================================= -->
+
           <ion-item>
             <ion-label position="stacked"> Vehicle Number </ion-label>
 
@@ -218,15 +286,27 @@
             >
             </ion-input>
           </ion-item>
+          <!-- ================================================= -->
+          <!-- verify -->
+          <!-- ================================================= -->
 
           <!-- Verified -->
-          <!-- <ion-item>
-            <ion-label> Verified </ion-label>
+          <ion-item>
+            <ion-label>
+              <h2>Tenant Verification</h2>
 
-            <ion-toggle [(ngModel)]="tenant.isVerified"> </ion-toggle>
-          </ion-item> -->
+              <p>
+                {{ tenant.isVerified ? "Verified" : "Not Verified" }}
+              </p>
+            </ion-label>
 
+            <ion-toggle slot="end" [(ngModel)]="tenant.isVerified"></ion-toggle>
+          </ion-item>
+
+          <!-- ================================================= -->
           <!-- Submit -->
+          <!-- ================================================= -->
+
           <ion-button
             expand="block"
             class="submit-button"

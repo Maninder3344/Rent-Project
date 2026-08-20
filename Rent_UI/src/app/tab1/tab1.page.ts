@@ -27,6 +27,7 @@ import {
   homeSharp,
   logOutOutline,
   addCircleOutline,
+  peopleSharp,
 } from 'ionicons/icons';
 
 import { IonSearchbar } from '@ionic/angular/standalone';
@@ -82,6 +83,7 @@ export class Tab1Page {
       homeSharp,
       logOutOutline,
       addCircleOutline,
+      peopleSharp
     });
   }
   async openModal() {

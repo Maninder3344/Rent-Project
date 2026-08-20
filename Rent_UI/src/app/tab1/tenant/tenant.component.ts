@@ -24,6 +24,7 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
+  IonToggle,
 } from '@ionic/angular/standalone';
 
 import {
@@ -48,11 +49,8 @@ import { ApiService } from '../../services/api';
 
 interface User {
   _id: string;
-
   name?: string;
-
   email?: string;
-
   phone?: string;
 }
 
@@ -64,6 +62,8 @@ interface Tenant {
   _id?: string;
 
   userId: string;
+
+  propertyId: string;
 
   roomId: string;
 
@@ -97,11 +97,25 @@ interface Room {
 
   rent: number;
 
-  propertyId: string;
+  propertyId: string | any;
 
   createdAt?: string;
 
   updatedAt?: string;
+}
+
+// =====================================================
+// Property Interface
+// =====================================================
+
+interface Property {
+  _id: string;
+
+  name: string;
+
+  address?: string;
+
+  UnitPrice?: number;
 }
 
 // =====================================================
@@ -128,7 +142,7 @@ interface Room {
     IonIcon,
     IonTitle,
     IonContent,
-
+    IonToggle,
     IonList,
 
     IonCard,
@@ -150,7 +164,6 @@ interface Room {
   ],
 })
 export class TenantComponent implements OnInit {
-
   // =====================================================
   // Route ID
   // =====================================================
@@ -163,11 +176,14 @@ export class TenantComponent implements OnInit {
 
   rooms: Room[] = [];
 
+  // Rooms filtered according to selected property
+  filteredRooms: Room[] = [];
+
   // =====================================================
   // Properties
   // =====================================================
 
-  properties: any[] = [];
+  properties: Property[] = [];
 
   // =====================================================
   // Users
@@ -202,6 +218,8 @@ export class TenantComponent implements OnInit {
   tenant: Tenant = {
     userId: '',
 
+    propertyId: '',
+
     roomId: '',
 
     name: '',
@@ -223,7 +241,7 @@ export class TenantComponent implements OnInit {
 
   constructor(
     private api: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     addIcons({
       addOutline,
@@ -243,17 +261,12 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   ngOnInit(): void {
-
     // Route:
     // /tenant/:id
 
-    this.routeId =
-      this.route.snapshot.paramMap.get('id');
+    this.routeId = this.route.snapshot.paramMap.get('id');
 
-    console.log(
-      'Tenant Route ID:',
-      this.routeId
-    );
+    console.log('Tenant Route ID:', this.routeId);
 
     this.getUsers();
 
@@ -261,7 +274,7 @@ export class TenantComponent implements OnInit {
 
     this.getRooms();
 
-    // this.getProperties();
+    this.getProperties();
   }
 
   // =====================================================
@@ -269,49 +282,25 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   getUsers(): void {
-
     this.api.GetAllUsers().subscribe({
-
       next: (response: any) => {
-
-        console.log(
-          'Get Users Response:',
-          response
-        );
+        console.log('Get Users Response:', response);
 
         if (Array.isArray(response)) {
-
           this.users = response;
-
-        } else if (
-          Array.isArray(response?.data)
-        ) {
-
+        } else if (Array.isArray(response?.data)) {
           this.users = response.data;
-
-        } else if (
-          Array.isArray(response?.users)
-        ) {
-
+        } else if (Array.isArray(response?.users)) {
           this.users = response.users;
-
         } else {
-
           this.users = [];
         }
 
-        console.log(
-          'Users:',
-          this.users
-        );
+        console.log('Users:', this.users);
       },
 
       error: (error: any) => {
-
-        console.error(
-          'Get users error:',
-          error
-        );
+        console.error('Get users error:', error);
 
         this.users = [];
       },
@@ -319,141 +308,156 @@ export class TenantComponent implements OnInit {
   }
 
   // =====================================================
-  // Get Room By ID
+  // Get Rooms
   // =====================================================
 
-  getRooms() {
-  this.api.GetAllRooms().subscribe({
-    next: (response: any) => {
+  getRooms(): void {
+    this.api.GetAllRooms().subscribe({
+      next: (response: any) => {
+        console.log('========== GET ALL ROOMS RESPONSE ==========');
 
-      console.log('========== GET ALL ROOMS RESPONSE ==========');
-      console.log(response);
+        console.log(response);
 
-      const rooms =
-        response?.data ||
-        response?.rooms ||
-        response;
+        const rooms = response?.data || response?.rooms || response;
 
-      if (Array.isArray(rooms)) {
+        if (Array.isArray(rooms)) {
+          this.rooms = rooms;
 
-        this.rooms = rooms;
+          console.log('========== ROOMS LOADED ==========');
 
-        console.log('========== ROOMS LOADED ==========');
-        console.log('Total rooms:', this.rooms.length);
-        console.log('Rooms:', this.rooms);
+          console.log('Total rooms:', this.rooms.length);
 
-      } else {
+          console.log('Rooms:', this.rooms);
 
-        console.error(
-          'GetAllRooms did not return an array:',
-          response
-        );
+          // Filter rooms if property is already selected
+          if (this.tenant.propertyId) {
+            this.filterRoomsByProperty();
+          } else {
+            this.filteredRooms = [];
+          }
+        } else {
+          console.error('GetAllRooms did not return an array:', response);
+
+          this.rooms = [];
+
+          this.filteredRooms = [];
+        }
+      },
+
+      error: (error: any) => {
+        console.error('GET ALL ROOMS ERROR:', error);
 
         this.rooms = [];
-      }
-    },
 
-    error: (error: any) => {
-
-      console.error(
-        'GET ALL ROOMS ERROR:',
-        error
-      );
-
-      this.rooms = [];
-    }
-  });
-}
+        this.filteredRooms = [];
+      },
+    });
+  }
 
   // =====================================================
   // Get All Properties
   // =====================================================
 
-  // getProperties(): void {
+  getProperties(): void {
+    this.api.GetAllProperties().subscribe({
+      next: (response: any) => {
+        console.log('Get Properties Response:', response);
 
-  //   this.api.GetAllProperties().subscribe({
+        if (Array.isArray(response)) {
+          this.properties = response;
+        } else if (Array.isArray(response?.data)) {
+          this.properties = response.data;
+        } else if (Array.isArray(response?.properties)) {
+          this.properties = response.properties;
+        } else {
+          this.properties = [];
+        }
 
-  //     next: (response: any) => {
+        console.log('Properties:', this.properties);
+      },
 
-  //       console.log(
-  //         'Get Properties Response:',
-  //         response
-  //       );
+      error: (error: any) => {
+        console.error('Get properties error:', error);
 
-  //       if (Array.isArray(response)) {
+        this.properties = [];
+      },
+    });
+  }
 
-  //         this.properties = response;
+  // =====================================================
+  // Property Changed
+  // =====================================================
 
-  //       } else if (
-  //         Array.isArray(response?.data)
-  //       ) {
+  onPropertyChange(): void {
+    console.log('Selected Property:', this.tenant.propertyId);
 
-  //         this.properties = response.data;
+    // Important:
+    // When property changes, remove previously selected room
 
-  //       } else if (
-  //         Array.isArray(response?.properties)
-  //       ) {
+    this.tenant.roomId = '';
 
-  //         this.properties =
-  //           response.properties;
+    // Filter rooms
+    this.filterRoomsByProperty();
+  }
 
-  //       } else {
+  // =====================================================
+  // Filter Rooms By Property
+  // =====================================================
 
-  //         this.properties = [];
-  //       }
+  filterRoomsByProperty(): void {
+    if (!this.tenant.propertyId) {
+      this.filteredRooms = [];
 
-  //       console.log(
-  //         'Properties:',
-  //         this.properties
-  //       );
-  //     },
+      return;
+    }
 
-  //     error: (error: any) => {
+    const selectedPropertyId = String(this.tenant.propertyId);
 
-  //       console.error(
-  //         'Get properties error:',
-  //         error
-  //       );
+    this.filteredRooms = this.rooms.filter((room: Room) => {
+      let roomPropertyId: string = '';
 
-  //       this.properties = [];
-  //     },
-  //   });
-  // }
+      // Case 1:
+      // propertyId is normal string
+
+      if (typeof room.propertyId === 'string') {
+        roomPropertyId = room.propertyId;
+      }
+
+      // Case 2:
+      // propertyId is ObjectId/object
+      // Example:
+      // propertyId: { _id: "123", name: "Property 1" }
+      else if (room.propertyId?._id) {
+        roomPropertyId = room.propertyId._id;
+      }
+
+      // Compare IDs
+
+      return String(roomPropertyId) === selectedPropertyId;
+    });
+
+    console.log('Selected Property ID:', selectedPropertyId);
+
+    console.log('Filtered Rooms:', this.filteredRooms);
+  }
 
   // =====================================================
   // Filter Tenants
   // =====================================================
 
   get filteredTenants(): Tenant[] {
-
-    const search =
-      this.searchText
-        .trim()
-        .toLowerCase();
+    const search = this.searchText.trim().toLowerCase();
 
     if (!search) {
-
       return this.tenants;
     }
 
     return this.tenants.filter(
       (tenant) =>
-
-        tenant.name
-          ?.toLowerCase()
-          .includes(search) ||
-
-        tenant.phone
-          ?.toLowerCase()
-          .includes(search) ||
-
-        tenant.adhaarCardNumber
-          ?.toLowerCase()
-          .includes(search) ||
-
-        tenant.vehicleNumber
-          ?.toLowerCase()
-          .includes(search)
+        tenant.name?.toLowerCase().includes(search) ||
+        tenant.phone?.toLowerCase().includes(search) ||
+        tenant.adhaarCardNumber?.toLowerCase().includes(search) ||
+        tenant.vehicleNumber?.toLowerCase().includes(search),
     );
   }
 
@@ -462,51 +466,25 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   getTenants(): void {
-
     this.api.GetAllTenants().subscribe({
-
       next: (response: any) => {
-
-        console.log(
-          'Get Tenants Response:',
-          response
-        );
+        console.log('Get Tenants Response:', response);
 
         if (Array.isArray(response)) {
-
           this.tenants = response;
-
-        } else if (
-          Array.isArray(response?.data)
-        ) {
-
-          this.tenants =
-            response.data;
-
-        } else if (
-          Array.isArray(response?.tenants)
-        ) {
-
-          this.tenants =
-            response.tenants;
-
+        } else if (Array.isArray(response?.data)) {
+          this.tenants = response.data;
+        } else if (Array.isArray(response?.tenants)) {
+          this.tenants = response.tenants;
         } else {
-
           this.tenants = [];
         }
 
-        console.log(
-          'Tenants:',
-          this.tenants
-        );
+        console.log('Tenants:', this.tenants);
       },
 
       error: (error: any) => {
-
-        console.error(
-          'Get tenants error:',
-          error
-        );
+        console.error('Get tenants error:', error);
 
         this.tenants = [];
       },
@@ -518,12 +496,12 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   openTenantModal(): void {
-
     this.isEditMode = false;
 
     this.tenant = {
-
       userId: '',
+
+      propertyId: '',
 
       roomId: '',
 
@@ -540,6 +518,9 @@ export class TenantComponent implements OnInit {
       vehicleNumber: '',
     };
 
+    // Clear filtered rooms
+    this.filteredRooms = [];
+
     this.isModalOpen = true;
   }
 
@@ -547,17 +528,15 @@ export class TenantComponent implements OnInit {
   // Edit Tenant
   // =====================================================
 
-  editTenant(
-    tenant: Tenant
-  ): void {
-
+  editTenant(tenant: Tenant): void {
     this.isEditMode = true;
 
     this.tenant = {
-
       _id: tenant._id,
 
       userId: tenant.userId,
+
+      propertyId: tenant.propertyId,
 
       roomId: tenant.roomId,
 
@@ -565,24 +544,21 @@ export class TenantComponent implements OnInit {
 
       phone: tenant.phone,
 
-      isVerified:
-        tenant.isVerified,
+      isVerified: tenant.isVerified,
 
-      adhaarCardNumber:
-        tenant.adhaarCardNumber,
+      adhaarCardNumber: tenant.adhaarCardNumber,
 
-      members:
-        tenant.members ?? 1,
+      members: tenant.members ?? 1,
 
-      vehicleNumber:
-        tenant.vehicleNumber ?? '',
+      vehicleNumber: tenant.vehicleNumber ?? '',
 
-      createdAt:
-        tenant.createdAt,
+      createdAt: tenant.createdAt,
 
-      updatedAt:
-        tenant.updatedAt,
+      updatedAt: tenant.updatedAt,
     };
+
+    // Filter rooms for tenant's property
+    this.filterRoomsByProperty();
 
     this.isModalOpen = true;
   }
@@ -592,7 +568,6 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   closeModal(): void {
-
     this.isModalOpen = false;
   }
 
@@ -601,33 +576,24 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   onUserChange(): void {
-
-    const selectedUser =
-      this.users.find(
-        (user) =>
-          user._id ===
-          this.tenant.userId
-      );
+    const selectedUser = this.users.find(
+      (user) => user._id === this.tenant.userId,
+    );
 
     if (!selectedUser) {
-
       return;
     }
 
     // Fill name automatically
 
     if (selectedUser.name) {
-
-      this.tenant.name =
-        selectedUser.name;
+      this.tenant.name = selectedUser.name;
     }
 
     // Fill phone automatically
 
     if (selectedUser.phone) {
-
-      this.tenant.phone =
-        selectedUser.phone;
+      this.tenant.phone = selectedUser.phone;
     }
   }
 
@@ -636,16 +602,22 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   saveTenant(): void {
-
     // =================================================
     // Validate User
     // =================================================
 
     if (!this.tenant.userId) {
+      alert('Please select a user');
 
-      alert(
-        'Please select a user'
-      );
+      return;
+    }
+
+    // =================================================
+    // Validate Property
+    // =================================================
+
+    if (!this.tenant.propertyId) {
+      alert('Please select a property');
 
       return;
     }
@@ -655,10 +627,7 @@ export class TenantComponent implements OnInit {
     // =================================================
 
     if (!this.tenant.roomId) {
-
-      alert(
-        'Please select a room'
-      );
+      alert('Please select a room');
 
       return;
     }
@@ -667,13 +636,8 @@ export class TenantComponent implements OnInit {
     // Validate Name
     // =================================================
 
-    if (
-      !this.tenant.name?.trim()
-    ) {
-
-      alert(
-        'Please enter tenant name'
-      );
+    if (!this.tenant.name?.trim()) {
+      alert('Please enter tenant name');
 
       return;
     }
@@ -682,13 +646,8 @@ export class TenantComponent implements OnInit {
     // Validate Phone
     // =================================================
 
-    if (
-      !this.tenant.phone?.trim()
-    ) {
-
-      alert(
-        'Please enter phone number'
-      );
+    if (!this.tenant.phone?.trim()) {
+      alert('Please enter phone number');
 
       return;
     }
@@ -697,15 +656,8 @@ export class TenantComponent implements OnInit {
     // Validate Aadhaar
     // =================================================
 
-    if (
-      !this.tenant
-        .adhaarCardNumber
-        ?.trim()
-    ) {
-
-      alert(
-        'Please enter Aadhaar number'
-      );
+    if (!this.tenant.adhaarCardNumber?.trim()) {
+      alert('Please enter Aadhaar number');
 
       return;
     }
@@ -714,14 +666,8 @@ export class TenantComponent implements OnInit {
     // Validate Members
     // =================================================
 
-    if (
-      !this.tenant.members ||
-      Number(this.tenant.members) < 1
-    ) {
-
-      alert(
-        'Members must be at least 1'
-      );
+    if (!this.tenant.members || Number(this.tenant.members) < 1) {
+      alert('Members must be at least 1');
 
       return;
     }
@@ -731,86 +677,51 @@ export class TenantComponent implements OnInit {
     // =================================================
 
     if (this.isEditMode) {
-
       if (!this.tenant._id) {
-
-        alert(
-          'Tenant ID is missing'
-        );
+        alert('Tenant ID is missing');
 
         return;
       }
 
       const updateTenant = {
+        _id: this.tenant._id,
 
-        _id:
-          this.tenant._id,
+        userId: this.tenant.userId,
 
-        userId:
-          this.tenant.userId,
+        propertyId: this.tenant.propertyId,
 
-        roomId:
-          this.tenant.roomId,
+        roomId: this.tenant.roomId,
 
-        name:
-          this.tenant.name.trim(),
+        name: this.tenant.name.trim(),
 
-        phone:
-          this.tenant.phone.trim(),
+        phone: this.tenant.phone.trim(),
 
-        isVerified:
-          this.tenant.isVerified,
+        isVerified: this.tenant.isVerified,
 
-        adhaarCardNumber:
-          this.tenant
-            .adhaarCardNumber
-            .trim(),
+        adhaarCardNumber: this.tenant.adhaarCardNumber.trim(),
 
-        members:
-          Number(
-            this.tenant.members
-          ),
+        members: Number(this.tenant.members),
 
-        vehicleNumber:
-          this.tenant
-            .vehicleNumber
-            ?.trim() || '',
+        vehicleNumber: this.tenant.vehicleNumber?.trim() || '',
       };
 
-      console.log(
-        'Updating Tenant:',
-        updateTenant
-      );
+      console.log('Updating Tenant:', updateTenant);
 
-      this.api
-        .UpdateTenant(updateTenant)
-        .subscribe({
+      this.api.UpdateTenant(updateTenant).subscribe({
+        next: (response: any) => {
+          console.log('Tenant updated:', response);
 
-          next: (response: any) => {
+          this.closeModal();
 
-            console.log(
-              'Tenant updated:',
-              response
-            );
+          this.getTenants();
+        },
 
-            this.closeModal();
+        error: (error: any) => {
+          console.error('Update tenant error:', error);
 
-            this.getTenants();
-          },
-
-          error: (error: any) => {
-
-            console.error(
-              'Update tenant error:',
-              error
-            );
-
-            alert(
-              error?.error?.message ||
-              'Failed to update tenant'
-            );
-          },
-        });
+          alert(error?.error?.message || 'Failed to update tenant');
+        },
+      });
 
       return;
     }
@@ -820,128 +731,74 @@ export class TenantComponent implements OnInit {
     // =================================================
 
     const newTenant = {
+      userId: this.tenant.userId,
 
-      userId:
-        this.tenant.userId,
+      propertyId: this.tenant.propertyId,
 
-      roomId:
-        this.tenant.roomId,
+      roomId: this.tenant.roomId,
 
-      name:
-        this.tenant.name.trim(),
+      name: this.tenant.name.trim(),
 
-      phone:
-        this.tenant.phone.trim(),
+      phone: this.tenant.phone.trim(),
 
-      adhaarCardNumber:
-        this.tenant
-          .adhaarCardNumber
-          .trim(),
+      adhaarCardNumber: this.tenant.adhaarCardNumber.trim(),
 
-      members:
-        Number(
-          this.tenant.members
-        ),
+      members: Number(this.tenant.members),
 
-      vehicleNumber:
-        this.tenant
-          .vehicleNumber
-          ?.trim() || '',
+      vehicleNumber: this.tenant.vehicleNumber?.trim() || '',
 
-      isVerified:
-        this.tenant.isVerified,
+      isVerified: this.tenant.isVerified,
     };
 
-    console.log(
-      'Creating Tenant:',
-      newTenant
-    );
+    console.log('Creating Tenant:', newTenant);
 
-    this.api
-      .CreateTenant(newTenant)
-      .subscribe({
+    this.api.CreateTenant(newTenant).subscribe({
+      next: (response: any) => {
+        console.log('Tenant created:', response);
 
-        next: (response: any) => {
+        this.closeModal();
 
-          console.log(
-            'Tenant created:',
-            response
-          );
+        this.getTenants();
+      },
 
-          this.closeModal();
+      error: (error: any) => {
+        console.error('Create tenant error:', error);
 
-          this.getTenants();
-        },
-
-        error: (error: any) => {
-
-          console.error(
-            'Create tenant error:',
-            error
-          );
-
-          alert(
-            error?.error?.message ||
-            'Failed to create tenant'
-          );
-        },
-      });
+        alert(error?.error?.message || 'Failed to create tenant');
+      },
+    });
   }
 
   // =====================================================
   // Delete Tenant
   // =====================================================
 
-  deleteTenant(
-    id?: string
-  ): void {
-
+  deleteTenant(id?: string): void {
     if (!id) {
-
-      console.error(
-        'Tenant ID is undefined'
-      );
+      console.error('Tenant ID is undefined');
 
       return;
     }
 
-    const confirmed =
-      confirm(
-        'Are you sure you want to delete this tenant?'
-      );
+    const confirmed = confirm('Are you sure you want to delete this tenant?');
 
     if (!confirmed) {
-
       return;
     }
 
-    this.api
-      .DeleteTenant(id)
-      .subscribe({
+    this.api.DeleteTenant(id).subscribe({
+      next: (response: any) => {
+        console.log('Tenant deleted:', response);
 
-        next: (response: any) => {
+        this.getTenants();
+      },
 
-          console.log(
-            'Tenant deleted:',
-            response
-          );
+      error: (error: any) => {
+        console.error('Delete tenant error:', error);
 
-          this.getTenants();
-        },
-
-        error: (error: any) => {
-
-          console.error(
-            'Delete tenant error:',
-            error
-          );
-
-          alert(
-            error?.error?.message ||
-            'Failed to delete tenant'
-          );
-        },
-      });
+        alert(error?.error?.message || 'Failed to delete tenant');
+      },
+    });
   }
 
   // =====================================================
@@ -949,7 +806,6 @@ export class TenantComponent implements OnInit {
   // =====================================================
 
   goBack(): void {
-
     history.back();
   }
 }

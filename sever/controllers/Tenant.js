@@ -4,6 +4,7 @@ export const CreateTenant = async (req, res) => {
   try {
     let tenantData = await TenantModel.create({
       userId: req.body.userId,
+      propertyId: req.body.propertyId,
       roomId: req.body.roomId,
       name: req.body.name,
       phone: req.body.phone,
@@ -31,6 +32,8 @@ export const UpdateTenant = async (req, res) => {
       { _id: req.body._id },
       {
         userId: req.body.userId,
+        propertyId: req.body.propertyId,
+        roomId: req.body.roomId,
         name: req.body.name,
         phone: req.body.phone,
         isVerified: req.body.isVerified,

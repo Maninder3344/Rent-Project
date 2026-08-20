@@ -9,6 +9,12 @@ const tenantSchema = new mongoose.Schema(
       unique: true,
     },
 
+    propertyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
+      required: true,
+    },
+
     roomId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Room",
@@ -27,10 +33,11 @@ const tenantSchema = new mongoose.Schema(
       unique: true,
     },
 
-    // isVerified: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+    isVerified: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
 
     adhaarCardNumber: {
       type: String,
