@@ -1,3 +1,6 @@
 <ion-app>
+  @if (isLoading) {
+    <app-preloader></app-preloader>
+  }
   <ion-router-outlet></ion-router-outlet>
 </ion-app>

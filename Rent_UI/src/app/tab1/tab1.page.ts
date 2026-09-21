@@ -14,12 +14,8 @@ import {
   IonToolbar,
   ModalController,
   IonButton,
-  IonLabel,
-} from '@ionic/angular/standalone';
-import {
-  IonCard,
-  IonCardContent,
-} from '@ionic/angular/standalone';
+  IonLabel, IonButtons } from '@ionic/angular/standalone';
+import { IonCard, IonCardContent } from '@ionic/angular/standalone';
 import {
   trashOutline,
   createOutline,
@@ -83,7 +79,7 @@ export class Tab1Page {
       homeSharp,
       logOutOutline,
       addCircleOutline,
-      peopleSharp
+      peopleSharp,
     });
   }
   async openModal() {
@@ -142,6 +138,8 @@ export class Tab1Page {
 
     await alert.present();
   }
+
+  
 
   getProperties() {
     this.api.GetAllProperties().subscribe({
@@ -220,13 +218,29 @@ export class Tab1Page {
     });
   }
 
+  ionViewWillLeave() {
+  const activeElement = document.activeElement as HTMLElement;
+
+  if (activeElement) {
+    activeElement.blur();
+  }
+}
   goToRoom(property: any) {
-    this.router.navigate(['/room',property._id]);
+  // Remove focus from searchbar/input before navigation
+  const activeElement = document.activeElement as HTMLElement;
+
+  if (activeElement) {
+    activeElement.blur();
   }
 
+  // Clear searchbar focus
+  this.searchText = '';
+
+  // Navigate to room page
+  this.router.navigate(['/room', property._id]);
+}
+
   goToTenant() {
-  this.router.navigate(['/tenant']);
+    this.router.navigate(['/tenant']);
+  }
 }
-}
-
-

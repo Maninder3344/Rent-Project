@@ -91,6 +91,24 @@
 
         <!-- Actions -->
         <div class="action-buttons">
+          <!--ADD ROOMMEMBER-->
+          <ion-button fill="outline" size="small" 
+          (click)="(tenant)"
+          >
+            <ion-icon slot="start" name="person-add-outline"> </ion-icon>
+
+            Add Room Member
+          </ion-button>
+
+          <!--ADD MEMBER-->
+          <ion-button fill="outline" size="small" 
+          (click)="(tenant)"
+          >
+            <ion-icon slot="start" name="person-add-outline"> </ion-icon>
+
+            Add Member
+          </ion-button>
+
           <!-- Edit -->
           <ion-button fill="outline" size="small" (click)="editTenant(tenant)">
             <ion-icon slot="start" name="create-outline"> </ion-icon>
@@ -271,6 +289,9 @@
             >
             </ion-input>
           </ion-item>
+
+
+          
 
           <!-- ================================================= -->
           <!-- Vehicle -->

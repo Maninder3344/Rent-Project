@@ -156,3 +156,63 @@ ion-searchbar {
   padding: 8px;
   color: #000000;
 }
+
+
+
+:host {
+  animation: pageEnter 0.3s ease-out;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================
+   AUTOMATIC DARK MODE
+   ========================= */
+
+@media (prefers-color-scheme: dark) {
+
+  .home-content {
+    --background: #121212;
+  }
+
+  .hero h2 {
+    color: white;
+  }
+
+  .hero p {
+    color: #aaa;
+  }
+
+  .property-card {
+    --background: #1e1e1e;
+    background: #1e1e1e;
+  }
+
+  .card-top h2 {
+    color: white;
+  }
+
+  .card-top p {
+    color: #aaa;
+  }
+
+  .custom-tabbar {
+    --background: white;
+  }
+
+  ion-searchbar {
+    --background: #ffffff;
+    color: #000000;
+  }
+}

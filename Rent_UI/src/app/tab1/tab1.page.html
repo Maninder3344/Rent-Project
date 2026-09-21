@@ -13,17 +13,20 @@
             (ionInput)="filterProperties()"
           >
           </ion-searchbar>
+           <div class="hero">
+          <h2>Property Management</h2>
+        </div>
+         <ion-button expand="block" class="add-btn" (click)="openModal()">
+          Add Property
+        </ion-button>
         </ion-toolbar>
+        
       </ion-header>
 
       <ion-content fullscreen class="home-content">
-        <div class="hero">
-          <h2>Property Management</h2>
-        </div>
+       
 
-        <ion-button expand="block" class="add-btn" (click)="openModal()">
-          Add Property
-        </ion-button>
+       
 
         <ion-card
           class="property-card"
@@ -42,9 +45,7 @@
               ₹ {{property.UnitPrice}}
             </div>
             <div class="addroom-btn">
-              <ion-button
-              fill="clear"
-              (click)="goToRoom(property)">
+              <ion-button fill="clear" (click)="goToRoom(property)">
                 <ion-icon name="add-circle-outline"></ion-icon>
               </ion-button>
             </div>
@@ -119,10 +120,10 @@
       <ion-label>Property</ion-label>
     </ion-tab-button>
 
-   <ion-tab-button (click)="goToTenant()">
-  <ion-icon name="people-sharp"></ion-icon>
-  <ion-label>Tenant</ion-label>
-</ion-tab-button>
+    <ion-tab-button (click)="goToTenant()">
+      <ion-icon name="people-sharp"></ion-icon>
+      <ion-label>Tenant</ion-label>
+    </ion-tab-button>
 
     <ion-tab-button tab="library">
       <ion-icon name="library"></ion-icon>

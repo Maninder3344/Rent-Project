@@ -36,8 +36,7 @@ import {
   createOutline,
   trashOutline,
   saveOutline,
-  addCircleOutline,
-} from 'ionicons/icons';
+  addCircleOutline, personAddOutline } from 'ionicons/icons';
 
 import { addIcons } from 'ionicons';
 
@@ -243,17 +242,7 @@ export class TenantComponent implements OnInit {
     private api: ApiService,
     private route: ActivatedRoute,
   ) {
-    addIcons({
-      addOutline,
-      arrowBackOutline,
-      peopleOutline,
-      cardOutline,
-      carOutline,
-      createOutline,
-      trashOutline,
-      saveOutline,
-      addCircleOutline,
-    });
+    addIcons({arrowBackOutline,addCircleOutline,peopleOutline,cardOutline,carOutline,personAddOutline,createOutline,trashOutline,addOutline,saveOutline,});
   }
 
   // =====================================================
