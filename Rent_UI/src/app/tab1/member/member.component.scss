@@ -1,0 +1,85 @@
+ion-card {
+  margin: 12px 0;
+  border-radius: 14px;
+}
+.blue-navbar {
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+  --color: #ffffff;
+}
+
+.blue-navbar ion-back-button {
+  --color: #ffffff;
+}
+
+.blue-navbar ion-title {
+  color: #ffffff;
+}
+.member-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.member-header h2 {
+  margin: 0;
+}
+
+.member-header p {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.empty-state {
+  height: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-state ion-button {
+  width: 100%;
+  border-radius: 100px;
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+
+}
+
+.empty-state ion-icon {
+  font-size: 25px;
+  margin-bottom: 1px;
+}
+
+.h11 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0px;
+  margin-bottom: 35px;
+}
+
+.empty-state h2 {
+  margin: 5px 0;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+}
+
+.loading {
+  height: 8vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-btn {
+  margin-top: 25px;
+}

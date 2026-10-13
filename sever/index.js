@@ -30,6 +30,7 @@ import {
   CreateTenant,
   GetTenants,
   DeleteTenant,
+  UpdateTenant,
 } from "./controllers/Tenant.js";
 import { verifyToken } from "./middleware/verifyToken.js";
 import { CreateRent, GetAllRent } from "./controllers/Rent.js";
@@ -39,6 +40,13 @@ import {
   LoginLimiter,
 } from "./middleware/rateLimit.js";
 import cookieParser from "cookie-parser";
+import {
+  createTenantMember,
+  updateTenantMember,
+  GetTenantMemberById,
+  GetTenantsMember,
+  DeleteTenantMember
+} from "./controllers/TenantMember.js";
 
 dotenv.config();
 const app = express();
@@ -71,8 +79,16 @@ app.get("/GetRoomById", GetRoomById);
 app.post("/CreateRent", verifyToken, CreateRent);
 app.get("/GetAllRent", verifyToken, GetAllRent);
 
+//member
+app.post("/CreateTenantMember", createTenantMember);
+app.put("/UpdateTenantMember", updateTenantMember);
+app.get("/GetTenantMemberById", GetTenantMemberById);
+app.get("/GetTenantMember", GetTenantsMember);
+app.delete("/DeleteTenantMember",DeleteTenantMember);
+
 // tenant routes
 app.post("/CreateTenant", CreateTenant);
+app.put("/UpdateTenant", UpdateTenant);
 app.get("/GetTenants", GetTenants);
 app.delete("/DeleteTenant", DeleteTenant);
 
@@ -82,6 +98,9 @@ app.post("/VerifyAccount", otpLimiter, verifyToken, VerifyAccount);
 app.post("/LoginUser", LoginLimiter, LoginUser);
 app.post("/LogoutUser", verifyToken, LogoutUser);
 app.get("/GetAllUsers", verifyToken, GetAllUsers);
+
+
+
 
 // Connect to MongoDB and start the server
 mongoose

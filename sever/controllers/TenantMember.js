@@ -1,96 +1,126 @@
-import TenantModel from "../models/Tenant.js";
+import mongoose from "mongoose";
+import TenantMemberModel from "../models/TenantMember.js";
 
-export const createTenant = async (req, res) => {
+// CREATE MEMBER
+export const createTenantMember = async (req, res) => {
   try {
-    let tenantData = await TenantModel.create({
-      userId: req.body.userId,
-      name: req.body.name,
-      phone: req.body.phone,
-      isVerified: req.body.isVerified,
-      adhaarCardNumber: req.body.adhaarCardNumber,
-      members: req.body.members,
-      vehicleNumber: req.body.vehicleNumber,
-    });
-    if (tenantData) {
-      res
-        .status(200)
-        .json({ message: "Tenant created successfully", data: tenantData });
-    } else {
-      res.status(400).json({ message: "Tenant creation failed" });
+    const { tenantId, memberName, phone } = req.body;
+
+    if (!tenantId || !mongoose.Types.ObjectId.isValid(tenantId)) {
+      return res.status(400).json({
+        message: "Valid tenantId is required",
+      });
     }
-    console.log(tenantData);
+
+    if (!memberName?.trim()) {
+      return res.status(400).json({
+        message: "Member name is required",
+      });
+    }
+
+    const member = await TenantMemberModel.create({
+      tenantId,
+      memberName: memberName.trim(),
+      phone: phone?.trim() || "",
+    });
+
+    return res.status(201).json({
+      message: "Member created successfully",
+      data: member,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Create member error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-export const updateTenant = async (req, res) => {
+// UPDATE MEMBER
+export const updateTenantMember = async (req, res) => {
   try {
-    let tenantData = await TenantModel.findByIdAndUpdate(
-      { _id: req.body._id },
-      {
-        userId: req.body.userId,
-        name: req.body.name,
-        phone: req.body.phone,
-        isVerified: req.body.isVerified,
-        adhaarCardNumber: req.body.adhaarCardNumber,
-        members: req.body.members,
-        vehicleNumber: req.body.vehicleNumber,
-      },
+    const { _id, memberName, phone, tenantId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      return res.status(400).json({ message: "Valid member ID is required" });
+    }
+
+    const member = await TenantMemberModel.findByIdAndUpdate(
+      _id,
+      { memberName, phone, tenantId },
+      { new: true, runValidators: true },
     );
-    if (tenantData) {
-      res
-        .status(200)
-        .json({ message: "Tenant updated successfully", data: tenantData });
-    } else {
-      res.status(400).json({ message: "Tenant update failed" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-export const deleteTenant = async (req, res) => {
-  try {
-    let tenantData = await TenantModel.findByIdAndDelete({
-      _id: req.body._id,
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    return res.status(200).json({
+      message: "Member updated successfully",
+      data: member,
     });
-    if (tenantData) {
-      res
-        .status(200)
-        .json({ message: "Tenant deleted successfully", data: tenantData });
-    } else {
-      res.status(400).json({ message: "Tenant deletion failed" });
-    }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Update member error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-export const GetTenants = async (req, res) => {
+// DELETE MEMBER
+export const DeleteTenantMember = async (req, res) => {
   try {
-    let tenamtData = await TenantModel.find();
-    if (tenamtData) {
-      res
-        .status(200)
-        .json({ message: "Tenants fetched successfully", data: tenamtData });
+    const { _id } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      return res.status(400).json({ message: "Valid member ID is required" });
     }
+
+    const member = await TenantMemberModel.findByIdAndDelete(_id);
+
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    return res.status(200).json({
+      message: "Member deleted successfully",
+      data: member,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Delete member error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-export const GetTenantById = async (req, res) => {
+// GET ALL MEMBERS FOR A TENANT
+export const GetTenantMemberById = async (req, res) => {
   try {
-    let tenantData = await TenantModel.findById({ _id: req.params.id });
-    if (tenantData) {
-      res
-        .status(200)
-        .json({ message: "Tenant fetched successfully", data: tenantData });
-    } else {
-      res.status(400).json({ message: "Tenant fetch failed" });
+    // Angular sends ?Id=TENANT_ID
+    const tenantId = req.query.Id;
+
+    if (!tenantId || !mongoose.Types.ObjectId.isValid(tenantId)) {
+      return res.status(400).json({ message: "Valid tenant ID is required" });
     }
+
+    const members = await TenantMemberModel.find({ tenantId });
+
+    return res.status(200).json({
+      message: "Tenant members fetched successfully",
+      data: members,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Get tenant members error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// GET ALL MEMBERS
+export const GetTenantsMember = async (req, res) => {
+  try {
+    const members = await TenantMemberModel.find();
+
+    return res.status(200).json({
+      message: "Members fetched successfully",
+      data: members,
+    });
+  } catch (error) {
+    console.error("Get all members error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };

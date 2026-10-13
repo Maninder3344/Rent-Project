@@ -135,6 +135,23 @@ ion-badge {
   margin-top: 10px;
 }
 
+.btn-cc {
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+.blue-navbar {
+  --background: linear-gradient(135deg, #6a11cb, #2575fc);
+  --color: #ffffff;
+}
+
+.blue-navbar ion-back-button {
+  --color: #ffffff;
+}
+
+.blue-navbar ion-title {
+  color: #ffffff;
+}
+
 /* ============================= */
 /* Empty State */
 /* ============================= */

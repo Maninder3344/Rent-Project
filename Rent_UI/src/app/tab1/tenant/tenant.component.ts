@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   IonHeader,
@@ -36,7 +36,10 @@ import {
   createOutline,
   trashOutline,
   saveOutline,
-  addCircleOutline, personAddOutline } from 'ionicons/icons';
+  addCircleOutline,
+  personAddOutline,
+  
+} from 'ionicons/icons';
 
 import { addIcons } from 'ionicons';
 
@@ -241,8 +244,20 @@ export class TenantComponent implements OnInit {
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
-    addIcons({arrowBackOutline,addCircleOutline,peopleOutline,cardOutline,carOutline,personAddOutline,createOutline,trashOutline,addOutline,saveOutline,});
+    addIcons({
+      arrowBackOutline,
+      addCircleOutline,
+      peopleOutline,
+      cardOutline,
+      carOutline,
+      personAddOutline,
+      createOutline,
+      trashOutline,
+      addOutline,
+      saveOutline,
+    });
   }
 
   // =====================================================
@@ -796,5 +811,9 @@ export class TenantComponent implements OnInit {
 
   goBack(): void {
     history.back();
+  }
+
+  goToMembers(tenant: any) {
+    this.router.navigate(['/member', tenant._id]);
   }
 }

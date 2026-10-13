@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar class="blue-navbar">
     <!-- Back Button -->
     <ion-buttons slot="start">
       <ion-button fill="clear" class="back-btn" (click)="goBack()">
@@ -24,7 +24,7 @@
   <br />
 
   <!-- Add Tenant -->
-  <ion-button expand="block" (click)="openTenantModal()">
+  <ion-button class="btn-cc" expand="block" (click)="openTenantModal()">
     <ion-icon slot="start" name="add-circle-outline"> </ion-icon>
 
     Add Tenant
@@ -102,7 +102,7 @@
 
           <!--ADD MEMBER-->
           <ion-button fill="outline" size="small" 
-          (click)="(tenant)"
+          (click)="goToMembers(tenant)"
           >
             <ion-icon slot="start" name="person-add-outline"> </ion-icon>
 

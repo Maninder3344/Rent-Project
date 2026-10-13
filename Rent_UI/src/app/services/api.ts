@@ -133,9 +133,28 @@ export class ApiService {
 
   DeleteTenant(id: string) {
     return this.http.delete(`${this.baseUrl}/DeleteTenant`, {
-      body: {
-        _id: id,
-      },
+      body: { _id: id },
+      withCredentials: true,
+    });
+  }
+  
+  GetTenantById(id: string) {
+    return this.http.get(`${this.baseUrl}/GetTenantById`, {
+      params: { _id: id },
+      withCredentials: true,
+    });
+  }
+
+  // tenant member
+  CreateTenantMember(tenantMember: any) {
+    return this.http.post(`${this.baseUrl}/CreateTenantMember`, tenantMember, {
+      withCredentials: true,
+    })
+  }
+
+  GetTenantMembers(id: string) {
+    return this.http.get(`${this.baseUrl}/GetTenantMembers`, {
+      params: { _id: id },
       withCredentials: true,
     });
   }
