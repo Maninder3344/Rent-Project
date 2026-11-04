@@ -25,6 +25,10 @@ import {
   IonSelect,
   IonSelectOption,
   IonToggle,
+  IonTabButton,
+  IonTabBar,
+  
+  
 } from '@ionic/angular/standalone';
 
 import {
@@ -38,7 +42,10 @@ import {
   saveOutline,
   addCircleOutline,
   personAddOutline,
-  
+  home,
+  peopleSharp,
+  library,
+  logOutOutline,
 } from 'ionicons/icons';
 
 import { addIcons } from 'ionicons';
@@ -134,9 +141,12 @@ interface Property {
   standalone: true,
 
   imports: [
+    
+    IonTabBar,
+    IonTabButton,
     CommonModule,
     FormsModule,
-
+    
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -255,6 +265,10 @@ export class TenantComponent implements OnInit {
       personAddOutline,
       createOutline,
       trashOutline,
+      home,
+      peopleSharp,
+      library,
+      logOutOutline,
       addOutline,
       saveOutline,
     });
@@ -816,4 +830,15 @@ export class TenantComponent implements OnInit {
   goToMembers(tenant: any) {
     this.router.navigate(['/member', tenant._id]);
   }
+
+goToPage(path: string) {
+  this.router.navigateByUrl(path);
+}
+
+logout() {
+  // Replace this with your existing logout logic if you have one.
+  this.router.navigateByUrl('/login');
+}
+
+  
 }

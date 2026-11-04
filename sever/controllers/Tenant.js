@@ -11,7 +11,8 @@ export const CreateTenant = async (req, res) => {
       isVerified: req.body.isVerified,
       adhaarCardNumber: req.body.adhaarCardNumber,
       members: req.body.members,
-      vehicleNumber: req.body.vehicleNumber,
+      // vehicleNumber: req.body.vehicleNumber,
+      vehicleNumber: req.body.vehicleNumber?.trim() || null,
     });
     if (tenantData) {
       res
@@ -39,7 +40,8 @@ export const UpdateTenant = async (req, res) => {
         isVerified: req.body.isVerified,
         adhaarCardNumber: req.body.adhaarCardNumber,
         members: req.body.members,
-        vehicleNumber: req.body.vehicleNumber,
+        // vehicleNumber: req.body.vehicleNumber,
+        vehicleNumber: req.body.vehicleNumber?.trim() || null,
       },
     );
     if (tenantData) {

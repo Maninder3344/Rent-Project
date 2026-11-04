@@ -52,7 +52,8 @@ const tenantSchema = new mongoose.Schema(
 
     vehicleNumber: {
       type: String,
-      unique: true,
+      
+      default: null
     },
   },
   {

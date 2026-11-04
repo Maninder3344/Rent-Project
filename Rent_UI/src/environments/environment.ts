@@ -7,6 +7,15 @@ export const environment = {
    apiUrl: 'http://localhost:8081', // Replace with your backend API URL
 };
 
+
+// export const environment = {
+//   production: false,
+//   apiUrl: 'http://10.0.2.2:8081'
+// };
+
+
+
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

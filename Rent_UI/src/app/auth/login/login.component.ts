@@ -1,5 +1,14 @@
+
 import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+
+import {
+  IonicModule,
+  ToastController,
+} from '@ionic/angular';
+
 import {
   logoFacebook,
   logoGoogle,
@@ -10,13 +19,8 @@ import {
   eyeOutline,
   eyeOffOutline,
 } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
-import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
-import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 
+import { addIcons } from 'ionicons';
 import { ApiService } from '../../services/api';
 
 @Component({
@@ -27,9 +31,8 @@ import { ApiService } from '../../services/api';
   imports: [
     CommonModule,
     IonicModule,
-    ReactiveFormsModule,
-    RouterModule,
     FormsModule,
+    RouterModule,
   ],
 })
 export class LoginPage {
@@ -42,7 +45,6 @@ export class LoginPage {
 
   constructor(
     private router: Router,
-    private fb: FormBuilder,
     private api: ApiService,
     private toastController: ToastController
   ) {
@@ -59,18 +61,23 @@ export class LoginPage {
   }
 
   ionViewWillEnter() {
-    const rememberedUser = localStorage.getItem('rememberUser');
+    try {
+      const rememberedUser = localStorage.getItem('rememberUser');
 
-    if (rememberedUser) {
-      const user = JSON.parse(rememberedUser);
+      if (rememberedUser) {
+        const user = JSON.parse(rememberedUser);
 
-      this.email = user.email;
-      this.password = user.password;
-      this.rememberMe = true;
-    } else {
-      this.email = '';
-      this.password = '';
-      this.rememberMe = false;
+        this.email = user.email || '';
+        this.password = user.password || '';
+        this.rememberMe = true;
+      } else {
+        this.email = '';
+        this.password = '';
+        this.rememberMe = false;
+      }
+    } catch (error) {
+      console.error('Could not load remembered user:', error);
+      localStorage.removeItem('rememberUser');
     }
   }
 
@@ -79,12 +86,16 @@ export class LoginPage {
   }
 
   goToSignup() {
-    this.router.navigate(['/signup']);
+    this.router.navigateByUrl('/signup');
   }
 
-  login() {
-    if (!this.email || !this.password) {
-      this.showToast('Please enter a valid email and password');
+  async login() {
+    if (this.isLoading) {
+      return;
+    }
+
+    if (!this.email.trim() || !this.password) {
+      await this.showToast('Please enter your email and password');
       return;
     }
 
@@ -95,25 +106,35 @@ export class LoginPage {
       password: this.password,
     };
 
+    console.log('Login API URL:', `${this.api.baseUrl}/LoginUser`);
+
     this.api.LoginUser(body).subscribe({
       next: async (res: any) => {
-        this.isLoading = false;
+        console.log('Login response:', JSON.stringify(res));
+        console.log('Login success:', res?.success);
 
-        if (res.success) {
-          // Login flag
+        if (res?.success !== true) {
+          this.isLoading = false;
+          await this.showToast(res?.message || 'Login failed');
+          return;
+        }
+
+        try {
           sessionStorage.setItem('isLoggedIn', 'true');
 
-          // User data
           if (res.user) {
             sessionStorage.setItem('user', JSON.stringify(res.user));
           }
 
-          // Remember Me
+          if (res.token) {
+            sessionStorage.setItem('token', res.token);
+          }
+
           if (this.rememberMe) {
             localStorage.setItem(
               'rememberUser',
               JSON.stringify({
-                email: this.email,
+                email: this.email.trim(),
                 password: this.password,
               })
             );
@@ -121,21 +142,39 @@ export class LoginPage {
             localStorage.removeItem('rememberUser');
           }
 
-          await this.showToast(res.message);
+          console.log(
+            'Session login flag:',
+            sessionStorage.getItem('isLoggedIn')
+          );
 
-          this.router.navigateByUrl('/home', {
+          const navigated = await this.router.navigateByUrl('/home', {
             replaceUrl: true,
           });
-        } else {
-          this.showToast(res.message);
+
+          console.log('Navigation result:', navigated);
+          console.log('Current route:', this.router.url);
+
+          if (!navigated) {
+            await this.showToast(
+              'Login succeeded, but Home navigation was blocked'
+            );
+          }
+        } catch (error) {
+          console.error('Login handling error:', error);
+          await this.showToast('An error occurred after login');
+        } finally {
+          this.isLoading = false;
         }
       },
 
-      error: (err) => {
+      error: async (err: any) => {
         this.isLoading = false;
 
-        this.showToast(
-          err.error?.message || 'Something went wrong'
+        console.error('Login HTTP status:', err.status);
+        console.error('Login error:', err.error);
+
+        await this.showToast(
+          err.error?.message || 'Unable to log in. Please try again.'
         );
       },
     });
@@ -144,7 +183,7 @@ export class LoginPage {
   async showToast(message: string) {
     const toast = await this.toastController.create({
       message,
-      duration: 2000,
+      duration: 2500,
       position: 'bottom',
       color: 'danger',
     });

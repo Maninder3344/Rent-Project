@@ -12,8 +12,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
-<!-- ================================================= -->
+  <!-- ================================================= -->
   <!-- Empty / Add Tenant -->
   <!-- ================================================= -->
 
@@ -92,18 +91,14 @@
         <!-- Actions -->
         <div class="action-buttons">
           <!--ADD ROOMMEMBER-->
-          <ion-button fill="outline" size="small" 
-          (click)="(tenant)"
-          >
+          <ion-button fill="outline" size="small" (click)="(tenant)">
             <ion-icon slot="start" name="person-add-outline"> </ion-icon>
 
             Add Room Member
           </ion-button>
 
           <!--ADD MEMBER-->
-          <ion-button fill="outline" size="small" 
-          (click)="goToMembers(tenant)"
-          >
+          <ion-button fill="outline" size="small" (click)="goToMembers(tenant)">
             <ion-icon slot="start" name="person-add-outline"> </ion-icon>
 
             Add Member
@@ -131,8 +126,6 @@
       </ion-card-content>
     </ion-card>
   </ion-list>
-
-  
 </ion-content>
 
 <!-- ===================================================== -->
@@ -290,9 +283,6 @@
             </ion-input>
           </ion-item>
 
-
-          
-
           <!-- ================================================= -->
           <!-- Vehicle -->
           <!-- ================================================= -->
@@ -346,3 +336,29 @@
     </ion-content>
   </ng-template>
 </ion-modal>
+
+
+  <!-- Bottom Tabs -->
+
+  <ion-tab-bar slot="bottom" class="custom-tabbar">
+    <ion-tab-button tab="home"(click)="goToPage('/home')">
+      <ion-icon name="home"></ion-icon>
+      <ion-label>Property</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button (click)="goToPage('/tenant')">
+      <ion-icon name="people-sharp"></ion-icon>
+      <ion-label>Tenant</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="library">
+      <ion-icon name="library"></ion-icon>
+      <ion-label>Library</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button>
+      <ion-icon name="log-out-outline"></ion-icon>
+      <ion-label>Logout</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+

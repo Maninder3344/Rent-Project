@@ -5,7 +5,7 @@ const roomSchema = new mongoose.Schema(
     roomNo: {
       type: String,
       required: true,
-     
+      trim: true,
     },
 
     floor: {
@@ -33,8 +33,18 @@ const roomSchema = new mongoose.Schema(
   }
 );
 
-// Room number must be unique within the same property
-roomSchema.index({ propertyId: 1, roomNo: 1 }, { unique: true });
+// Same room number allowed on different floors
+// Same room number not allowed on the same floor
+roomSchema.index(
+  {
+    propertyId: 1,
+    floor: 1,
+    roomNo: 1
+  },  
+    {
+      unique: true
+    }
+);
 
 const RoomModel = mongoose.model("Room", roomSchema);
 

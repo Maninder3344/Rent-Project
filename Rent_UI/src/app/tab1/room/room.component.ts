@@ -1,7 +1,9 @@
+
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import {
   IonContent,
   IonHeader,
@@ -19,25 +21,30 @@ import {
   IonRow,
   IonCol,
   ToastController,
-  IonButtons, IonModal } from '@ionic/angular/standalone';
-import { Location } from '@angular/common';
+  IonButtons,
+  IonModal
+} from '@ionic/angular/standalone';
+
 import { addIcons } from 'ionicons';
+
 import {
   addCircleOutline,
   trashOutline,
   createOutline,
-  arrowBackOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
+
 import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
   styleUrls: ['./room.component.scss'],
-  imports: [IonModal, 
-    IonButtons,
+  imports: [
     CommonModule,
     FormsModule,
+    IonModal,
+    IonButtons,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -52,27 +59,23 @@ import { ApiService } from '../../services/api';
     IonIcon,
     IonGrid,
     IonRow,
-    IonCol,
-  ],
+    IonCol
+  ]
 })
 export class RoomComponent implements OnInit {
+
   rooms: any[] = [];
   properties: any[] = [];
 
+  propertyId!: string;
+
   isModalOpen = false;
 
-  openModal() {
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
   room = {
     roomNo: '',
     floor: 1,
     rent: 0,
-    propertyId: 'id',
+    propertyId: ''
   };
 
   constructor(
@@ -80,76 +83,146 @@ export class RoomComponent implements OnInit {
     private toast: ToastController,
     private route: ActivatedRoute,
     private location: Location,
-     private router: Router,
+    private router: Router
   ) {
     addIcons({
       addCircleOutline,
       trashOutline,
       createOutline,
-      arrowBackOutline,
+      arrowBackOutline
     });
   }
-  propertyId!: string;
+
   ngOnInit() {
+
     this.propertyId = this.route.snapshot.paramMap.get('id')!;
-    console.log(this.propertyId);
+
+    console.log('Property ID:', this.propertyId);
 
     this.getRooms();
     this.getProperties();
   }
 
+  // OPEN MODAL
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  // CLOSE MODAL
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  // BACK BUTTON
   goBack() {
     this.location.back();
   }
 
-  // getRooms() {
-  //   this.api.GetRoomById(this.propertyId).subscribe({
-  //     next: (res: any) => {
-  //       this.rooms = res.data;
-  //     },
-  //   });
-  // }
-
-
+  // GET ROOMS
   getRooms() {
-  this.api.GetRoomById(this.propertyId).subscribe({
-    next: (res: any) => {
-      console.log('========== ROOM RESPONSE ==========');
-      console.log(res);
-      console.log('res.data:', res.data);
-      console.log('Is array:', Array.isArray(res.data));
 
-      if (Array.isArray(res.data)) {
-        res.data.forEach((room: any, index: number) => {
-          console.log(`Room ${index}:`, room);
-          console.log(`Room ${index} _id:`, room?._id);
-        });
+    this.api.GetRoomById(this.propertyId).subscribe({
+
+      next: (res: any) => {
+
+        console.log('ROOM RESPONSE:', res);
+
+        this.rooms = Array.isArray(res.data)
+          ? res.data
+          : [];
+
+      },
+
+      error: (err) => {
+        console.error('GET ROOMS ERROR:', err);
       }
 
-      this.rooms = res.data;
-    },
-    error: (err) => {
-      console.error('GET ROOMS ERROR:', err);
-    }
-  });
-}
-
-  getProperties() {
-    this.api.GetAllProperties().subscribe({
-      next: (res: any) => {
-        this.properties = res.data;
-      },
     });
+
   }
 
-  addRoom() {
+  // GET PROPERTIES
+  getProperties() {
+
+    this.api.GetAllProperties().subscribe({
+
+      next: (res: any) => {
+        this.properties = res.data || [];
+      },
+
+      error: (err) => {
+        console.error('GET PROPERTIES ERROR:', err);
+      }
+
+    });
+
+  }
+
+  // GROUP ROOMS FLOOR WISE
+  get groupedFloors() {
+
+    const floorMap = new Map<number, any[]>();
+
+    this.rooms.forEach((room: any) => {
+
+      const floor = Number(room.floor);
+
+      if (!floorMap.has(floor)) {
+        floorMap.set(floor, []);
+      }
+
+      floorMap.get(floor)!.push(room);
+
+    });
+
+    return Array.from(floorMap.entries())
+
+      .sort((a, b) => a[0] - b[0])
+
+      .map(([floor, rooms]) => ({
+
+        floor,
+
+        rooms: rooms.sort((a, b) =>
+
+          String(a.roomNo).localeCompare(
+            String(b.roomNo),
+            undefined,
+            { numeric: true }
+          )
+
+        )
+
+      }));
+
+  }
+
+  // ADD ROOM
+  async addRoom() {
+
+    if (!this.room.roomNo || !this.room.floor || this.room.rent < 0) {
+
+      const t = await this.toast.create({
+        message: 'Please enter valid room details!',
+        duration: 2000,
+        color: 'warning'
+      });
+
+      await t.present();
+      return;
+
+    }
+
     this.room.propertyId = this.propertyId;
+
     this.api.CreateRoom(this.room).subscribe({
+
       next: async (res: any) => {
+
         const t = await this.toast.create({
-          message: res.message,
+          message: res.message || 'Room added successfully!',
           duration: 1500,
-          color: 'success',
+          color: 'success'
         });
 
         await t.present();
@@ -158,47 +231,90 @@ export class RoomComponent implements OnInit {
           roomNo: '',
           floor: 1,
           rent: 0,
-          propertyId: '',
+          propertyId: this.propertyId
         };
 
+        this.closeModal();
+
         this.getRooms();
+
       },
+
       error: async (err) => {
-        console.log(err);
-        console.log(err.error);
-        console.log(err.error?.message);
+
+        console.error('CREATE ROOM ERROR:', err);
 
         const t = await this.toast.create({
           message: err.error?.message || 'Something went wrong!',
           duration: 2000,
-          color: 'danger',
+          color: 'danger'
         });
 
         await t.present();
+
+      }
+
+    });
+
+  }
+
+  // DELETE ROOM
+  async deleteRoom(id: string) {
+
+    const t = await this.toast.create({
+      message: 'Deleting room...',
+      duration: 1000,
+      color: 'medium'
+    });
+
+    await t.present();
+
+    this.api.DeleteRoom(id).subscribe({
+
+      next: async () => {
+
+        const successToast = await this.toast.create({
+          message: 'Room deleted successfully!',
+          duration: 1500,
+          color: 'success'
+        });
+
+        await successToast.present();
+
+        this.getRooms();
+
       },
+
+      error: async (err) => {
+
+        console.error('DELETE ROOM ERROR:', err);
+
+        const errorToast = await this.toast.create({
+          message: err.error?.message || 'Unable to delete room!',
+          duration: 2000,
+          color: 'danger'
+        });
+
+        await errorToast.present();
+
+      }
+
     });
+
   }
 
-  deleteRoom(id: string) {
-    this.api.DeleteRoom(id).subscribe(() => {
-      this.getRooms();
-    });
+  // GO TO TENANT PAGE
+  goToTenant(room: any) {
+
+    console.log('ROOM:', room);
+
+    if (!room?._id) {
+      console.error('Room ID not found');
+      return;
+    }
+
+    this.router.navigate(['/tenant', room._id]);
+
   }
 
-goToTenant(room: any) {
-  console.log('========== TENANT CLICK ==========');
-  console.log('Room received:', room);
-  console.log('Room JSON:', JSON.stringify(room, null, 2));
-  console.log('Room keys:', Object.keys(room || {}));
-
-  if (!room?._id) {
-    console.error('❌ _id DOES NOT EXIST');
-    return;
-  }
-
-  console.log('✅ Navigating with ID:', room._id);
-
-  this.router.navigate(['/tenant', room._id]);
 }
-}
-

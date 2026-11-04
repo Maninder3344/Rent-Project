@@ -18,9 +18,13 @@ export class ApiService {
   }
 
   LoginUser(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/LoginUser`, data, {
-      withCredentials: true,
-    });
+    return this.http.post(
+      `${this.baseUrl}/LoginUser`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
   }
 
   VerifyAccount(data: any): Observable<any> {
@@ -137,7 +141,7 @@ export class ApiService {
       withCredentials: true,
     });
   }
-  
+
   GetTenantById(id: string) {
     return this.http.get(`${this.baseUrl}/GetTenantById`, {
       params: { _id: id },
@@ -149,7 +153,7 @@ export class ApiService {
   CreateTenantMember(tenantMember: any) {
     return this.http.post(`${this.baseUrl}/CreateTenantMember`, tenantMember, {
       withCredentials: true,
-    })
+    });
   }
 
   GetTenantMembers(id: string) {
